@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connected Accounts</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+        
+        .messages {
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .platform-section {
+            margin-bottom: 40px;
+        }
+        
+        .platform-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .platform-icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+        }
+        
+        .platform-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+        
+        .account-count {
+            margin-left: auto;
+            background-color: #6c757d;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+        
+        .facebook .platform-title {
+            color: #4267B2;
+        }
+        
+        .facebook .account-count {
+            background-color: #4267B2;
+        }
+        
+        .instagram .platform-title {
+            color: #E4405F;
+        }
+        
+        .instagram .account-count {
+            background-color: #E4405F;
+        }
+        
+        .accounts-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .account-card {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .account-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .account-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .account-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .account-username {
+            color: #666;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+        
+        .account-id {
+            color: #999;
+            font-size: 0.85em;
+            font-family: monospace;
+        }
+        
+        .account-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .account-date {
+            color: #666;
+            font-size: 0.85em;
+        }
+        
+        .disconnect-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.85em;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .disconnect-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .token-status {
+            font-size: 0.8em;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .token-valid {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .token-expired {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            opacity: 0.5;
+        }
+        
+        .connect-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, #4267B2, #E4405F);
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+        
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Connected Accounts</h1>
+        
+        <!-- Django Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- Statistics -->
+        {% if accounts %}
+        <div class="stats-bar">
+            <div class="stat-item">
+                <span class="stat-number">{{ accounts.count }}</span>
+                <span class="stat-label">Total Accounts</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ facebook_accounts.count }}</span>
+                <span class="stat-label">Facebook Pages</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ instagram_accounts.count }}</span>
+                <span class="stat-label">Instagram Accounts</span>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if not accounts %}
+        <!-- Empty State -->
+        <div class="empty-state">
+            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="#ccc">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+            </svg>
+            <h3>No Connected Accounts</h3>
+            <p>You haven't connected any social media accounts yet. Get started by connecting your Facebook and Instagram business accounts.</p>
+            <a href="{% url 'connect_meta_form' %}" class="connect-btn">Connect Accounts</a>
+        </div>
+        {% else %}
+        
+        <!-- Facebook Accounts -->
+        {% if facebook_accounts %}
+        <div class="platform-section facebook">
+            <div class="platform-header">
+                <svg class="platform-icon" viewBox="0 0 24 24" fill="#4267B2">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <h2 class="platform-title">Facebook Pages</h2>
+                <span class="account-count">{{ facebook_accounts.count }}</span>
+            </div>
+            
+            <div class="accounts-grid">
+                {% for account in facebook_accounts %}
+                <div class="account-card">
+                    <div class="account-header">
+                        <div>
+                            <div class="account-name">{{ account.display_name }}</div>
+                            {% if account.username %}
+                            <div class="account-username">@{{ account.username }}</div>
+                            {% endif %}
+                            <div class="account-id">ID: {{ account.account_id }}</div>
+                        </div>
+                        <div class="token-status {% if account.is_token_expired %}token-expired{% else %}token-valid{% endif %}">
+                            {% if account.is_token_expired %}
+                                Expired
+                            {% else %}
+                                Active
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="account-meta">
+                        <span class="account-date">
+                            Connected: {{ account.created_at|date:"M d, Y" }}
+                        </span>
+                        <form method="post" action="{% url 'disconnect_account' account.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to disconnect {{ account.display_name }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="disconnect-btn">Disconnect</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Instagram Accounts -->
+        {% if instagram_accounts %}
+        <div class="platform-section instagram">
+            <div class="platform-header">
+                <svg class="platform-icon" viewBox="0 0 24 24" fill="#E4405F">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+                <h2 class="platform-title">Instagram Business</h2>
+                <span class="account-count">{{ instagram_accounts.count }}</span>
+            </div>
+            
+            <div class="accounts-grid">
+                {% for account in instagram_accounts %}
+                <div class="account-card">
+                    <div class="account-header">
+                        <div>
+                            <div class="account-name">{{ account.display_name }}</div>
+                            {% if account.username %}
+                            <div class="account-username">@{{ account.username }}</div>
+                            {% endif %}
+                            <div class="account-id">ID: {{ account.account_id }}</div>
+                        </div>
+                        <div class="token-status {% if account.is_token_expired %}token-expired{% else %}token-valid{% endif %}">
+                            {% if account.is_token_expired %}
+                                Expired
+                            {% else %}
+                                Active
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="account-meta">
+                        <span class="account-date">
+                            Connected: {{ account.created_at|date:"M d, Y" }}
+                        </span>
+                        <form method="post" action="{% url 'disconnect_account' account.id %}" style="display: inline;" onsubmit="return confirm('Are you sure you want to disconnect {{ account.display_name }}?');">
+                            {% csrf_token %}
+                            <button type="submit" class="disconnect-btn">Disconnect</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Connect More Accounts -->
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{% url 'connect_meta_form' %}" class="connect-btn">Connect More Accounts</a>
+        </div>
+        
+        {% endif %}
+    </div>
+
+    <script>
+        // Auto-refresh page if there are expired tokens
+        {% if accounts %}
+        const expiredTokens = document.querySelectorAll('.token-expired');
+        if (expiredTokens.length > 0) {
+            console.log('Some tokens have expired. Consider reconnecting those accounts.');
+        }
+        {% endif %}
+    </script>
+</body>
+</html>

@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Accounts - PostIt</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #4285f4;
+            --facebook-blue: #1877f2;
+            --instagram-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            --twitter-black: #000000;
+            --linkedin-blue: #0077b5;
+            --tiktok-black: #000000;
+            --youtube-red: #ff0000;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --error-red: #ef4444;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-gray: #f9fafb;
+            --border-gray: #e5e7eb;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-gray);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: var(--white);
+            border-bottom: 1px solid var(--border-gray);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-blue);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-subtitle {
+            font-size: 0.75rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-blue);
+            background: rgba(66, 133, 244, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary-blue);
+            background: rgba(66, 133, 244, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-red);
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--error-red);
+            color: white;
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--bg-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+        }
+
+        .notification-btn:hover {
+            background: var(--border-gray);
+            transform: translateY(-1px);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        /* Platform Sections */
+        .platform-section {
+            background: var(--white);
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-gray);
+            overflow: hidden;
+            animation: slideInLeft 0.6s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .platform-section:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .platform-section:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .platform-section:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .platform-section:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .platform-section:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .platform-section:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .platform-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .platform-header:hover {
+            background: rgba(0, 0, 0, 0.02);
+        }
+
+        .platform-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .platform-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .platform-icon:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .facebook .platform-icon {
+            background: var(--facebook-blue);
+        }
+
+        .instagram .platform-icon {
+            background: var(--instagram-gradient);
+        }
+
+        .twitter .platform-icon {
+            background: var(--twitter-black);
+        }
+
+        .linkedin .platform-icon {
+            background: var(--linkedin-blue);
+        }
+
+        .tiktok .platform-icon {
+            background: var(--tiktok-black);
+        }
+
+        .youtube .platform-icon {
+            background: var(--youtube-red);
+        }
+
+        .platform-details h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .platform-status {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .expand-icon {
+            color: var(--text-secondary);
+            transition: transform 0.3s ease;
+        }
+
+        .platform-section.expanded .expand-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Account Cards */
+        .accounts-list {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .platform-section.expanded .accounts-list {
+            max-height: 500px;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .account-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.4s ease-out;
+        }
+
+        .account-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-blue);
+        }
+
+        .account-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .account-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .account-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .account-details h4 {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .account-username {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .account-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-connected {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
+        }
+
+        .status-expired {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning-orange);
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .refresh-btn {
+            background: rgba(66, 133, 244, 0.1);
+            color: var(--primary-blue);
+        }
+
+        .refresh-btn:hover {
+            background: var(--primary-blue);
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-red);
+        }
+
+        .delete-btn:hover {
+            background: var(--error-red);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Add Account Button */
+        .add-account-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            padding: 1rem;
+            border: 2px dashed var(--border-gray);
+            border-radius: 8px;
+            background: transparent;
+            color: var(--primary-blue);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .add-account-btn:hover {
+            border-color: var(--primary-blue);
+            background: rgba(66, 133, 244, 0.05);
+            transform: translateY(-1px);
+        }
+
+        /* Help Button */
+        .help-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: #6366f1;
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            animation: bounceIn 0.8s ease-out 1s both;
+        }
+
+        .help-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .platform-header {
+                padding: 1rem;
+            }
+
+            .platform-section.expanded .accounts-list {
+                padding: 0 1rem 1rem;
+            }
+
+            .help-button {
+                bottom: 1rem;
+                right: 1rem;
+                width: 48px;
+                height: 48px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <a href="/" class="logo">
+            <div class="logo-icon">
+                <i class="fas fa-sticky-note"></i>
+            </div>
+            <div class="logo-text">
+                <span>PostIt</span>
+                <span class="logo-subtitle">Social Manager</span>
+            </div>
+        </a>
+        <nav class="nav-menu">
+            <a href="/" class="nav-link">Dashboard</a>
+            <a href="{% url 'compose' %}" class="nav-link">Create</a>
+            <a href="{% url 'manage' %}" class="nav-link active">Accounts</a>
+            <a href="/policy" class="nav-link">Privacy</a>
+        </nav>
+        <div class="header-right">
+            <a href="{% url 'logout' %}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                Logout
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Manage Accounts</h1>
+            <p class="page-subtitle">Connect or manage your social accounts to post everywhere.</p>
+        </div>
+        {% if messages %}
+        {% for message in messages %}
+        <div style="
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    {% if message.tags == 'success' %}
+        background: #d4edda; color: #155724; border-left-color: #28a745;
+    {% elif message.tags == 'error' %}
+        background: #f8d7da; color: #721c24; border-left-color: #dc3545;
+    {% elif message.tags == 'warning' %}
+        background: #fff3cd; color: #856404; border-left-color: #ffc107;
+    {% elif message.tags == 'info' %}
+        background: #d1ecf1; color: #0c5460; border-left-color: #17a2b8;
+    {% elif message.tags == 'debug' %}
+        background: #f8f9fa; color: #495057; border-left-color: #6c757d;
+    {% else %}
+        background: #e9ecef; color: #495057; border-left-color: #6c757d;
+    {% endif %}
+">
+            <span style="font-weight: 600;">
+                {% if message.tags == 'success' %}✓
+                {% elif message.tags == 'error' %}✕
+                {% elif message.tags == 'warning' %}⚠
+                {% elif message.tags == 'info' %}ℹ
+                {% else %}●
+                {% endif %}
+            </span>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <!-- YouTube Section -->
+        <div class="platform-section youtube">
+            <div class="platform-header" onclick="toggleSection(this)">
+                <div class="platform-info">
+                    <div class="platform-icon">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    <div class="platform-details">
+                        <h3>YouTube</h3>
+                        {% if yt_acc %}
+                        <p class="platform-status">
+                            {{ yt_acc|length }} account{{ yt_acc|length|pluralize }} connected
+                        </p>
+                        {% else %}
+                        <p class="platform-status">No accounts connected</p>
+                        {% endif %}
+                    </div>
+
+                </div>
+                <i class="fas fa-chevron-down expand-icon"></i>
+            </div>
+            <div class="accounts-list">
+                {% for yt in yt_acc %}
+                <div class="account-card">
+                    <div class="account-info">
+                        <div class="account-details">
+                            <h4>{{yt.channel_title}}</h4>
+                            <p class="account-username">{{yt.channel_id}}</p>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <div class="status-badge status-connected">
+                            <i class="fas fa-check"></i>
+                            Connected
+                        </div>
+                        <a style="text-decoration:none;" href="{% url 'disconnect_yt' yt.channel_id %}">
+                            <button class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <button class="add-account-btn">
+                    <i class="fas fa-plus"></i>
+                    <a style="color: #4285f4; text-decoration:none;" href='{% url "youtube" %}'>Add YouTube Account</a>
+                </button>
+            </div>
+        </div>
+        <!-- Facebook Section -->
+        <div class="platform-section facebook">
+            <div class="platform-header" onclick="toggleSection(this)">
+                <div class="platform-info">
+                    <div class="platform-icon">
+                        <i class="fa-brands fa-meta"></i>
+                    </div>
+                    <div class="platform-details">
+                        <h3>Meta (Facebook, Instagram)</h3>
+                        {% if meta_acc %}
+                        <p class="platform-status">
+                            {{ meta_acc|length }} account{{ meta_acc|length|pluralize }} connected
+                        </p>
+                        {% else %}
+                        <p class="platform-status">No accounts connected</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-down expand-icon"></i>
+            </div>
+            <div class="accounts-list">
+                {% for mt in meta_acc %}
+                <div class="account-card">
+                    <div class="account-info">
+                        <div class="account-details">
+                            <h4>{{mt.account_name}}</h4>
+                            <p class="account-username">@{{mt.username}}</p>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <div class="status-badge status-connected">
+                            <i class="fas fa-check"></i>
+                            Connected
+                        </div>
+                        <a style="text-decoration:none;" href="{% url 'disconnect_meta' mt.account_id %}">
+                            <button class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <a style="text-decoration:none;" href="{% url 'meta' %}">
+                    <button class="add-account-btn">
+                        <i class="fas fa-plus"></i>
+                        Add Facebook Account
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- X (Twitter) Section -->
+        <div class="platform-section twitter">
+            <div class="platform-header" onclick="toggleSection(this)">
+                <div class="platform-info">
+                    <div class="platform-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path fill="white"
+                                d="M453.2 112L523.8 112L369.6 288.2L551 528L409 528L297.7 382.6L170.5 528L99.8 528L264.7 339.5L90.8 112L236.4 112L336.9 244.9L453.2 112zM428.4 485.8L467.5 485.8L215.1 152L173.1 152L428.4 485.8z" />
+                        </svg>
+                    </div>
+                    <div class="platform-details">
+                        <h3>X (Twitter)</h3>
+                        {% if x_acc %}
+                        <p class="platform-status">
+                            {{ x_acc|length }} account{{ x_acc|length|pluralize }} connected
+                        </p>
+                        {% else %}
+                        <p class="platform-status">No accounts connected</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-down expand-icon"></i>
+            </div>
+            <div class="accounts-list">
+                {% for xac in x_acc %}
+                <div class="account-card">
+                    <div class="account-info">
+                        <div class="account-details">
+                            <h4>{{xac.name}}</h4>
+                            <p class="account-username">@{{xac.username}}</p>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <div class="status-badge status-connected">
+                            <i class="fas fa-check"></i>
+                            Connected
+                        </div>
+                        <a style="text-decoration:none;" href="{% url 'disconnect-x' xac.x_id %}">
+                            <button class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <a style="text-decoration:none;" href="{% url 'x' %}">
+                    <button class="add-account-btn">
+                        <i class="fas fa-plus"></i>
+                        Add X Account
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- Threads section-->
+        <div class="platform-section tiktok">
+            <div class="platform-header" onclick="toggleSection(this)">
+                <div class="platform-info">
+                    <div class="platform-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                            <path fill="white"
+                                d="M427.5 299.7C429.7 300.6 431.7 301.6 433.8 302.5C463 316.6 484.4 337.7 495.6 363.9C511.3 400.4 512.8 459.7 465.3 507.1C429.1 543.3 385 559.6 322.7 560.1L322.4 560.1C252.2 559.6 198.3 536 162 489.9C129.7 448.9 113.1 391.8 112.5 320.3L112.5 319.8C113 248.3 129.6 191.2 161.9 150.2C198.2 104.1 252.2 80.5 322.4 80L322.7 80C393 80.5 447.6 104 485 149.9C503.4 172.6 517 199.9 525.6 231.6L485.2 242.4C478.1 216.6 467.4 194.6 453 177C423.8 141.2 380 122.8 322.5 122.4C265.5 122.9 222.4 141.2 194.3 176.8C168.1 210.1 154.5 258.3 154 320C154.5 381.7 168.1 429.9 194.3 463.3C222.3 498.9 265.5 517.2 322.5 517.7C373.9 517.3 407.9 505.1 436.2 476.8C468.5 444.6 467.9 405 457.6 380.9C451.5 366.7 440.5 354.9 425.7 346C422 372.9 413.9 394.3 401 410.8C383.9 432.6 359.6 444.4 328.3 446.1C304.7 447.4 282 441.7 264.4 430.1C243.6 416.3 231.4 395.3 230.1 370.8C227.6 322.5 265.8 287.8 325.3 284.4C346.4 283.2 366.2 284.1 384.5 287.2C382.1 272.4 377.2 260.6 369.9 252C359.9 240.3 344.3 234.3 323.7 234.2L323 234.2C306.4 234.2 284 238.8 269.7 260.5L235.3 236.9C254.5 207.8 285.6 191.8 323.1 191.8L323.9 191.8C386.5 192.2 423.8 231.3 427.6 299.5L427.4 299.7L427.5 299.7zM271.5 368.5C272.8 393.6 299.9 405.3 326.1 403.8C351.7 402.4 380.7 392.4 385.6 330.6C372.4 327.7 357.8 326.2 342.2 326.2C337.4 326.2 332.6 326.3 327.8 326.6C284.9 329 270.6 349.8 271.6 368.4L271.5 368.5z" />
+                        </svg>
+                    </div>
+                    <div class="platform-details">
+                        <h3>Threads</h3>
+                        {% if thread_acc %}
+                        <p class="platform-status">
+                            {{ thread_acc|length }} account{{ thread_acc|length|pluralize }} connected
+                        </p>
+                        {% else %}
+                        <p class="platform-status">No accounts connected</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-down expand-icon"></i>
+            </div>
+            <div class="accounts-list">
+                {% for td in thread_acc %}
+                <div class="account-card">
+                    <div class="account-info">
+                        <!-- <div class="account-avatar"><img style="border-radius: 50%; height:50px; width:50px;" src="{{tk.avatar_url}}" alt="T"></div> -->
+                        <div class="account-details">
+                            <h4>{{td.name}}</h4>
+                            <p class="account-username">@{{td.username}}</p>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <div class="status-badge status-connected">
+                            <i class="fas fa-check"></i>
+                            Connected
+                        </div>
+                        <a style="text-decoration:none;" href="{% url 'threads_disconnect' td.account_id %}">
+                            <button class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <a style="text-decoration:none;" href="{% url 'threads' %}">
+                    <button class="add-account-btn">
+                        <i class="fas fa-plus"></i>
+                        Add Threads Account
+                    </button>
+                </a>
+            </div>
+        </div>
+
+
+        <!-- LinkedIn Section -->
+        <div class="platform-section linkedin">
+            <div class="platform-header" onclick="toggleSection(this)">
+                <div class="platform-info">
+                    <div class="platform-icon">
+                        <i class="fab fa-linkedin-in"></i>
+                    </div>
+                    <div class="platform-details">
+                        <h3>LinkedIn</h3>
+                        {% if linkedin_acc %}
+                        <p class="platform-status">
+                            {{ linkedin_acc|length }} account{{ linkedin_acc|length|pluralize }} connected
+                        </p>
+                        {% else %}
+                        <p class="platform-status">No accounts connected</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-down expand-icon"></i>
+            </div>
+            <div class="accounts-list">
+                {% for lk in linkedin_acc %}
+                <div class="account-card">
+                    <div class="account-info">
+                        <!-- <div class="account-avatar"><img style="border-radius: 50%; height:50px; width:50px;" src="{{tk.avatar_url}}" alt="T"></div> -->
+                        <div class="account-details">
+                            <h4>{{lk.name}}</h4>
+                            <p class="account-username">@{{lk.username}}</p>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <div class="status-badge status-connected">
+                            <i class="fas fa-check"></i>
+                            Connected
+                        </div>
+                        <a style="text-decoration:none;" href="{% url 'linkedin_disconnect' lk.linkedin_id %}">
+                            <button class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <a style="text-decoration:none;" href="{% url 'linkedin' %}">
+                    <button class="add-account-btn">
+                        <i class="fas fa-plus"></i>
+                        Add LinkedIn Account
+                    </button>
+                </a>
+            </div>
+        </div>
+
+        <!-- TikTok Section -->
+        <div class="platform-section tiktok">
+            <div class="platform-header" onclick="toggleSection(this)">
+                <div class="platform-info">
+                    <div class="platform-icon">
+                        <i class="fab fa-tiktok"></i>
+                    </div>
+                    <div class="platform-details">
+                        <h3>TikTok</h3>
+                        {% if tiktok_acc %}
+                        <p class="platform-status">
+                            {{ tiktok_acc|length }} account{{ tiktok_acc|length|pluralize }} connected
+                        </p>
+                        {% else %}
+                        <p class="platform-status">No accounts connected</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <i class="fas fa-chevron-down expand-icon"></i>
+            </div>
+            <div class="accounts-list">
+                {% for tk in tiktok_acc %}
+                <div class="account-card">
+                    <div class="account-info">
+                        <!-- <div class="account-avatar"><img style="border-radius: 50%; height:50px; width:50px;" src="{{tk.avatar_url}}" alt="T"></div> -->
+                        <div class="account-details">
+                            <h4>{{tk.display_name}}</h4>
+                            <p class="account-username">@{{tk.username}}</p>
+                        </div>
+                    </div>
+                    <div class="account-actions">
+                        <div class="status-badge status-connected">
+                            <i class="fas fa-check"></i>
+                            Connected
+                        </div>
+                        <a style="text-decoration:none;" href="{% url 'disconnect_tiktok' tk.tiktok_id %}">
+                            <button class="action-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <a style="text-decoration:none;" href="{% url 'tiktok' %}">
+                    <button class="add-account-btn">
+                        <i class="fas fa-plus"></i>
+                        Add TikTok Account
+                    </button>
+                </a>
+            </div>
+        </div>
+
+
+    </main>
+
+    <!-- Help Button -->
+    <button class="help-button">
+        <i class="fas fa-question"></i>
+    </button>
+
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('expanded');
+        }
+
+        // Add smooth scrolling and enhanced interactions
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add hover effects to account cards
+            const accountCards = document.querySelectorAll('.account-card');
+            accountCards.forEach(card => {
+                card.addEventListener('mouseenter', function () {
+                    this.style.transform = 'translateY(-2px)';
+                });
+
+                card.addEventListener('mouseleave', function () {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Add click animations to buttons
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.addEventListener('click', function (e) {
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+
+                    ripple.style.width = ripple.style.height = size + 'px';
+                    ripple.style.left = x + 'px';
+                    ripple.style.top = y + 'px';
+                    ripple.classList.add('ripple');
+
+                    this.appendChild(ripple);
+
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+            });
+        });
+    </script>
+
+    <style>
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</body>
+
+</html>

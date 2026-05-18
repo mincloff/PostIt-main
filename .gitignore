@@ -1,0 +1,13 @@
+# Security
+.env
+
+# Environments
+venv/
+env/
+
+# Database (Never push your live local database)
+db.sqlite3
+
+# Python Cache
+__pycache__/
+*.pyc

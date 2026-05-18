@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compose Post - PostIt</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+
+<body>
+    <!-- Header  -->
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <span class="logo-text">PostIt</span>
+            </a>
+            <nav class="nav-menu">
+                <a href="/" class="nav-link">Dashboard</a>
+                <a href="{% url 'compose' %}" class="nav-link active">Create</a>
+                <a href="{% url 'manage' %}" class="nav-link">Accounts</a>
+                <a href="/policy" class="nav-link">Privacy</a>
+            </nav>
+            <div class="header-actions">
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Added CSRF token outside of form for JavaScript access -->
+    {% csrf_token %}
+
+    <main class="main-content">
+        <div class="composer-container">
+            <!-- Main Composer  -->
+            <div class="composer-main">
+                <!-- Title Field  -->
+                <div class="form-group">
+                    <label class="form-label">Post Title (Optional)</label>
+                    <input type="text" class="form-input" id="postTitle" placeholder="Enter a title for your post...">
+                </div>
+
+                <!-- Description Field  -->
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input form-textarea" id="postDescription"
+                        placeholder="What's on your mind?"></textarea>
+                    <div class="char-counter-container" id="charCounterContainer">
+                        <div class="char-counter" id="charCounter">0 characters</div>
+                    </div>
+                </div>
+
+                <!-- Tags Field  -->
+                <div class="form-group">
+                    <label class="form-label">Tags</label>
+                    <div class="tags-container" id="tagsContainer">
+                        <input type="text" class="tag-input" id="tagInput" placeholder="Add tags...">
+                    </div>
+                </div>
+
+                <!-- File Upload  -->
+                <div class="form-group">
+                    <label class="form-label">Media Files</label>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-progress" id="uploadProgress" style="width: 0%;"></div>
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">Drag & drop files here</div>
+                        <div class="upload-subtext">or click to browse (Images, Videos, Documents)</div>
+                        <input type="file" class="file-input" id="fileInput" multiple
+                            accept="image/*,video/*,.pdf,.doc,.docx">
+                    </div>
+                    <div class="file-preview" id="filePreview"></div>
+                </div>
+
+                <!-- Action Buttons  -->
+                <div class="action-buttons">
+                    <button style="width:100%; display:flex; justify-content:center; align-items:center;"
+                        class="btn btn-primary" id="publishBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        Publish Now
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sidebar  -->
+            <div class="composer-sidebar">
+                <h3 style="margin-bottom: 1rem; color: #374151;">Platform Selection</h3>
+                <p style="color: #818181ff">Select the platforms to post to (account selection will be shown on submit)
+                </p>
+                <hr style="margin: 1.5rem 0; border-color: #e5e7eb;">
+                <div class="platforms-grid" id="platformsGrid">
+                    Platform cards will be populated by JavaScript
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Added account selection popup modal  -->
+    <div class="modal-overlay" id="accountSelectionModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Select Accounts to Post</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="platforms-list" id="platformsList">
+                    Platform accounts will be populated here
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelPost">Cancel</button>
+                <button class="btn btn-primary" id="confirmPost">Post to Selected Accounts</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Added posting progress modal  -->
+    <div class="modal-overlay" id="postingProgressModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Posting Progress</h2>
+            </div>
+            <div class="modal-body">
+                <div class="progress-list" id="progressList">
+                    Progress items will be populated here
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="closeProgressModal" style="display: none;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.accountsData = {
+            meta_acc: [
+                {% for acc in meta_acc %}
+        {
+            id: "{{ acc.account_id }}",
+                name: "{{ acc.account_name }}",
+                    username: "{{ acc.username }}"
+        } {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ],
+        yt_acc: [
+            {% for acc in yt_acc %}
+        {
+            id: "{{ acc.channel_id }}",
+                name: "{{ acc.channel_title }}",
+                    channel_title: "{{ acc.channel_title }}"
+        } {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ],
+        x_acc: [
+            {% for acc in x_acc %}
+        {
+            id: "{{ acc.x_id }}",
+                name: "{{ acc.name }}",
+                    username: "{{ acc.username }}"
+        } {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ],
+        tiktok_acc: [
+            {% for acc in tiktok_acc %}
+        {
+            id: "{{ acc.tiktok_id }}",
+                name: "{{ acc.display_name }}",
+                    username: "{{ acc.username }}"
+        } {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ],
+        linkedin_acc: [
+            {% for acc in linkedin_acc %}
+        {
+            id: "{{ acc.linkedin_id }}",
+                name: "{{ acc.name }}",
+                    username: "{{ acc.username }}"
+        } {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ],
+        thread_acc: [
+            {% for acc in thread_acc %}
+        {
+            id: "{{ acc.account_id }}",
+                name: "{{ acc.name }}",
+                    username: "{{ acc.username }}"
+        } {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+            ]
+        };
+    </script>
+    <script src="{% static 'script.js' %}"></script>
+</body>
+
+</html>

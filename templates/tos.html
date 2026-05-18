@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - PostIt</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .nav-link.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .last-updated {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #2196f3;
+        }
+
+        .content {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .section ul {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .section li {
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            margin: 1rem 0;
+        }
+
+        .warning {
+            background: #f8d7da;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #dc3545;
+            margin: 1rem 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .main {
+                padding: 0 1rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <span>PostIt</span>
+            </a>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/policy" class="nav-link">Privacy</a>
+                <a href="/tos" class="nav-link active">Terms</a>
+            </div>
+            <div class="nav-right">
+                <a href="{% url 'login' %}" class="login-btn">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">Terms of Service</h1>
+            <p class="page-subtitle">Agreement for using PostIt social media management platform</p>
+        </div>
+
+
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">1. Acceptance of Terms</h2>
+                <p>By accessing and using PostIt ("the Service"), you accept and agree to be bound by the terms and
+                    provision of this agreement. If you do not agree to abide by the above, please do not use this
+                    service.</p>
+                <div class="highlight">
+                    <p><strong>Important:</strong> These terms constitute a legally binding agreement between you and
+                        PostIt.</p>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">2. Description of Service</h2>
+                <p>PostIt is a social media management platform that allows users to:</p>
+                <ul>
+                    <li>Connect multiple social media accounts (Facebook, Instagram, Twitter, LinkedIn, TikTok, YouTube)
+                    </li>
+                    <li>Create, design, and schedule social media posts</li>
+                    <li>Post content simultaneously across multiple platforms</li>
+                    <li>Generate similar styled content using AI assistance</li>
+                    <li>Track analytics and engagement metrics</li>
+                    <li>Manage social media presence from a unified dashboard</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">3. User Accounts and Registration</h2>
+                <p>To use PostIt, you must:</p>
+                <ul>
+                    <li>Be at least 18 years old or have parental consent</li>
+                    <li>Provide accurate and complete registration information</li>
+                    <li>Maintain the security of your account credentials</li>
+                    <li>Accept responsibility for all activities under your account</li>
+                    <li>Notify us immediately of any unauthorized use</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">4. Social Media Account Integration</h2>
+                <div class="warning">
+                    <p><strong>Important:</strong> You are responsible for ensuring you have the right to connect and
+                        post to social media accounts.</p>
+                </div>
+                <p>When connecting social media accounts:</p>
+                <ul>
+                    <li>You grant PostIt permission to access and post on your behalf</li>
+                    <li>You remain responsible for all content posted through our platform</li>
+                    <li>You must comply with each platform's terms of service</li>
+                    <li>You can revoke access at any time through your account settings</li>
+                    <li>We are not responsible for changes to third-party platform policies</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">5. Content and Conduct</h2>
+                <p>You agree not to use PostIt to create or share content that:</p>
+                <ul>
+                    <li>Violates any laws or regulations</li>
+                    <li>Infringes on intellectual property rights</li>
+                    <li>Contains hate speech, harassment, or discriminatory content</li>
+                    <li>Promotes violence or illegal activities</li>
+                    <li>Contains spam, malware, or deceptive practices</li>
+                    <li>Violates the terms of service of connected social platforms</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">6. AI-Generated Content</h2>
+                <p>PostIt may use artificial intelligence to help generate content suggestions:</p>
+                <ul>
+                    <li>AI-generated content is provided as suggestions only</li>
+                    <li>You are responsible for reviewing and approving all content before posting</li>
+                    <li>We do not guarantee the accuracy or appropriateness of AI suggestions</li>
+                    <li>You retain full responsibility for all published content</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">7. Service Availability</h2>
+                <p>We strive to provide reliable service, but:</p>
+                <ul>
+                    <li>Service may be temporarily unavailable due to maintenance or technical issues</li>
+                    <li>We do not guarantee 100% uptime or availability</li>
+                    <li>Third-party platform changes may affect functionality</li>
+                    <li>We reserve the right to modify or discontinue features</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">8. Payment and Billing</h2>
+                <p>For paid services:</p>
+                <ul>
+                    <li>Fees are charged in advance for subscription periods</li>
+                    <li>All fees are non-refundable unless required by law</li>
+                    <li>We may change pricing with 30 days notice</li>
+                    <li>Accounts may be suspended for non-payment</li>
+                    <li>You can cancel your subscription at any time</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">9. Intellectual Property</h2>
+                <p>Regarding intellectual property:</p>
+                <ul>
+                    <li>You retain ownership of content you create and post</li>
+                    <li>You grant us license to process and display your content as necessary for the service</li>
+                    <li>PostIt platform, features, and technology remain our property</li>
+                    <li>You may not copy, modify, or reverse engineer our platform</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">10. Limitation of Liability</h2>
+                <div class="warning">
+                    <p><strong>Disclaimer:</strong> PostIt is provided "as is" without warranties of any kind.</p>
+                </div>
+                <p>We are not liable for:</p>
+                <ul>
+                    <li>Indirect, incidental, or consequential damages</li>
+                    <li>Loss of data, profits, or business opportunities</li>
+                    <li>Actions taken by third-party social media platforms</li>
+                    <li>Content posted by users through our platform</li>
+                    <li>Service interruptions or technical failures</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">11. Termination</h2>
+                <p>Either party may terminate this agreement:</p>
+                <ul>
+                    <li>You may delete your account at any time</li>
+                    <li>We may suspend or terminate accounts for violations</li>
+                    <li>Upon termination, your access to the service will cease</li>
+                    <li>We will delete your data according to our Privacy Policy</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">12. Changes to Terms</h2>
+                <p>We may update these terms from time to time. We will notify users of significant changes via email or
+                    platform notification. Continued use of the service after changes constitutes acceptance of new
+                    terms.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <span>© 2024 PostIt. All rights reserved.</span>
+            </div>
+            <div class="footer-links">
+                <a href="/policy" class="footer-link">Privacy</a>
+                <a href="/tos" class="footer-link">Terms</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

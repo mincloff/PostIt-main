@@ -1,0 +1,7 @@
+Django>=4.2,<5.0
+whitenoise>=6.6.0
+google-api-python-client>=2.147.0
+google-auth>=2.35.0
+google-auth-oauthlib>=1.2.1
+mysqlclient>=2.2.0 
+gunicorn>=21.2

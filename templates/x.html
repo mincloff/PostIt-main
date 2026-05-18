@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect X Account - PostIt</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #fafafa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-bottom: 1px solid #e1e8ed;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .brand-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .help-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #666;
+        }
+
+        .help-btn:hover {
+            background: #e0e0e0;
+            transform: scale(1.05);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+
+        .page-subtitle {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.5;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        /* Connection Card */
+        .connection-card {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e1e8ed;
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .connection-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .platform-icon {
+            width: 64px;
+            height: 64px;
+            background: #000000;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .platform-icon i {
+            font-size: 28px;
+            color: white;
+        }
+
+        .connection-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+        }
+
+        .connection-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 32px;
+        }
+
+        .connect-button {
+            background: #000000;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            height:60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .connect-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .connect-button:hover::before {
+            left: 100%;
+        }
+
+        .connect-button:hover {
+            background: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .connect-button:active {
+            transform: translateY(0);
+        }
+
+        .connect-button i {
+            font-size: 18px;
+        }
+
+        /* Info Link */
+        .info-link {
+            margin-top: 24px;
+            animation: fadeInUp 0.8s ease-out 0.6s both;
+        }
+
+        .info-link a {
+            color: #4285f4;
+            text-decoration: none;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: color 0.2s ease;
+        }
+
+        .info-link a:hover {
+            color: #3367d6;
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 24px;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-logo {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #4285f4, #34a853);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .main-content {
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .connection-card {
+                padding: 32px 24px;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .footer-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 24px;
+            }
+
+            .connection-card {
+                padding: 24px 16px;
+            }
+
+            .connect-button {
+                padding: 14px 24px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-section">
+<i class="fa-solid fa-arrow-left"></i>
+        </div>
+        <div class="header-actions">
+<i class="fa-solid fa-arrow-left"></i>
+        </div>
+    </header>
+     {% if messages %}
+    {% for message in messages %}
+    <div style="
+    padding: 12px 16px;
+    margin: 8px 0;
+    border-radius: 6px;
+    border-left: 4px solid;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    {% if message.tags == 'success' %}
+        background: #d4edda; color: #155724; border-left-color: #28a745;
+    {% elif message.tags == 'error' %}
+        background: #f8d7da; color: #721c24; border-left-color: #dc3545;
+    {% elif message.tags == 'warning' %}
+        background: #fff3cd; color: #856404; border-left-color: #ffc107;
+    {% elif message.tags == 'info' %}
+        background: #d1ecf1; color: #0c5460; border-left-color: #17a2b8;
+    {% elif message.tags == 'debug' %}
+        background: #f8f9fa; color: #495057; border-left-color: #6c757d;
+    {% else %}
+        background: #e9ecef; color: #495057; border-left-color: #6c757d;
+    {% endif %}
+">
+    <span style="font-weight: 600;">
+        {% if message.tags == 'success' %}✓
+        {% elif message.tags == 'error' %}✕
+        {% elif message.tags == 'warning' %}⚠
+        {% elif message.tags == 'info' %}ℹ
+        {% else %}●
+        {% endif %}
+    </span>
+    {{ message }}
+</div>
+    {% endfor %}
+    {% endif %}
+    <main class="main-content">
+        <div class="page-header">
+            <h1 class="page-title">Connect X Account</h1>
+            <p class="page-subtitle">
+                Link your X (Twitter) account to start posting tweets and tracking engagement across your social media presence.
+            </p>
+        </div>
+
+        <div class="connection-card">
+            <div class="platform-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                        <path fill="white" d="M453.2 112L523.8 112L369.6 288.2L551 528L409 528L297.7 382.6L170.5 528L99.8 528L264.7 339.5L90.8 112L236.4 112L336.9 244.9L453.2 112zM428.4 485.8L467.5 485.8L215.1 152L173.1 152L428.4 485.8z"/>
+                        </svg>
+            </div>
+            <h2 class="connection-title">Secure Connection</h2>
+            <p class="connection-description">
+                You'll be redirected to X for secure login and permissions. We'll only access what's needed to post and track your content.
+            </p>
+            <a style="text-decoration:none;" href="{% url 'connect-x' %}">
+            <button class="connect-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                        <path fill="white" d="M453.2 112L523.8 112L369.6 288.2L551 528L409 528L297.7 382.6L170.5 528L99.8 528L264.7 339.5L90.8 112L236.4 112L336.9 244.9L453.2 112zM428.4 485.8L467.5 485.8L215.1 152L173.1 152L428.4 485.8z"/>
+                        </svg>
+                Connect with X
+            </button>
+        </a>
+        </div>
+
+        <div class="info-link">
+            <a href="#" onclick="return false;">
+                <i class="fas fa-info-circle"></i>
+                Why do we need these permissions?
+            </a>
+        </div>
+    </main>
+
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">P</div>
+                <span>© 2024 PostIt. All rights reserved.</span>
+            </div>
+            <div class="footer-links">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Support</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SaaS Settings - PostIt Ultra AI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: left;
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            float: right;
+        }
+
+        .status-connected {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-disconnected {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .platform-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding-top: 10px;
+        }
+
+        .platform-box {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h2 style="margin: 0; color: #1f2937;">Integrations & API Vault</h2>
+                <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 14px;">Manage connections for <strong>
+                        {{org_name }}</strong></p>
+            </div>
+            <a href="{% url 'dashboard' %}" class="btn" style="background: #10b981;">&larr; Back to Generator</a>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top: 0; color: #374151; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px;">
+                Connection Status</h3>
+
+            <div class="platform-grid">
+                <div class="platform-box"><strong>Facebook</strong> {% if 'facebook' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>Instagram</strong> {% if 'instagram' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>LinkedIn</strong> {% if 'linkedin' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>X (Twitter)</strong> {% if 'x' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>Threads</strong> {% if 'threads' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>Snapchat</strong> {% if 'snapchat' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>Pinterest</strong> {% if 'pinterest' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>YouTube</strong> {% if 'youtube' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>TikTok</strong> {% if 'tiktok' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>Reddit</strong> {% if 'reddit' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-top: 0; color: #374151;">Link a New Platform</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label style="font-weight: bold; color: #4b5563;">Target Network</label>
+                    <select name="platform" required>
+                        <option value="facebook">Facebook</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="x">X (Twitter)</option>
+                        <option value="threads">Threads</option>
+                        <option value="snapchat">Snapchat</option>
+                        <option value="pinterest">Pinterest</option>
+                        <option value="youtube">YouTube</option>
+                        <option value="tiktok">TikTok</option>
+                        <option value="reddit">Reddit</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: bold; color: #4b5563;">Page ID / Account Number / Handle</label>
+                    <input type="text" name="account_id" placeholder="e.g., @mybrand or 1084729482910" required>
+                </div>
+
+                <div class="form-group">
+                    <label style="font-weight: bold; color: #4b5563;">Secure Access Token (API Key)</label>
+                    <input type="password" name="access_token" placeholder="Paste system-generated permanent token here"
+                        required>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Securely Save
+                    Credentials</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+
+</html>

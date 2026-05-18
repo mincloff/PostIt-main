@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - PostIt Ultra AI</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-top: 5px;
+        }
+
+        .btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .helptext,
+        ul {
+            font-size: 12px;
+            color: #6b7280;
+            list-style-type: none;
+            padding: 0;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2 style="margin-top: 0; color: #1f2937;">Create an Account</h2>
+        <p style="color: #6b7280; margin-bottom: 30px;">Start generating AI content today.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label style="font-weight: bold; color: #4b5563;">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <div class="helptext">{{ field.help_text|safe }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn">Create Account</button>
+        </form>
+        <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Already have an account? <a
+                href="{% url 'login' %}" style="color: #3b82f6; text-decoration: none; font-weight: bold;">Log in</a>
+        </p>
+    </div>
+</body>
+
+</html>

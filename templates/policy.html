@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Privacy Policy for PostIt - Learn how we collect, use, and protect your personal information when using our social media management platform.">
+    <meta name="robots" content="index, follow">
+    <title>Privacy Policy - PostIt</title>
+    <link rel="canonical" href="https://postit-5zpt.onrender.com/policy">
+    <link rel="icon" type="image/png" href="/static/logo.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #fafafa;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link.active {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .login-btn {
+            padding: 0.5rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-link {
+            color: #666;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        /* Main Content */
+        .main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .last-updated {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #2196f3;
+        }
+
+        .content {
+            background: white;
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .section ul {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .section li {
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 4px solid #ffc107;
+            margin: 1rem 0;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            color: #bdc3c7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .main {
+                padding: 0 1rem;
+            }
+
+            .content {
+                padding: 2rem 1.5rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav">
+            <a href="/" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <span>PostIt</span>
+            </a>
+            <div class="nav-menu">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/policy" class="nav-link active">Privacy</a>
+                <a href="/tos" class="nav-link">Terms</a>
+            </div>
+            <div class="nav-right">
+                <a href="{% url 'login' %}" class="login-btn">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main">
+        <div class="page-header">
+            <h1 class="page-title">Privacy Policy</h1>
+            <p class="page-subtitle">How we collect, use, and protect your information</p>
+        </div>
+
+
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">1. Information We Collect</h2>
+                <p>PostIt collects information to provide and improve our social media management services. We collect:
+                </p>
+                <ul>
+                    <li><strong>Account Information:</strong> Email, name, and profile information when you create an
+                        account</li>
+                    <li><strong>Social Media Accounts:</strong> Access tokens and permissions for connected social
+                        platforms</li>
+                    <li><strong>Content Data:</strong> Posts, images, and content you create or schedule through our
+                        platform</li>
+                    <li><strong>Usage Analytics:</strong> How you interact with our platform and performance metrics
+                    </li>
+                    <li><strong>Device Information:</strong> Browser type, IP address, and device identifiers</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">2. How We Use Your Information</h2>
+                <p>We use your information to:</p>
+                <ul>
+                    <li>Provide social media management and posting services</li>
+                    <li>Connect and manage your social media accounts</li>
+                    <li>Generate analytics and performance reports</li>
+                    <li>Improve our platform and develop new features</li>
+                    <li>Communicate with you about your account and our services</li>
+                    <li>Ensure platform security and prevent fraud</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">3. Social Media Integration</h2>
+                <div class="highlight">
+                    <p><strong>Important:</strong> When you connect social media accounts, we only access the
+                        permissions you explicitly grant. We never post without your authorization.</p>
+                </div>
+                <p>For connected social platforms, we may:</p>
+                <ul>
+                    <li>Read your profile information and follower counts</li>
+                    <li>Post content on your behalf when you schedule or publish posts</li>
+                    <li>Access analytics data to provide performance insights</li>
+                    <li>Retrieve your existing posts for content analysis (if permitted)</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">4. Data Sharing and Disclosure</h2>
+                <p>We do not sell your personal information. We may share information in these limited circumstances:
+                </p>
+                <ul>
+                    <li><strong>Service Providers:</strong> Third-party services that help us operate our platform</li>
+                    <li><strong>Legal Requirements:</strong> When required by law or to protect our rights</li>
+                    <li><strong>Business Transfers:</strong> In connection with mergers or acquisitions</li>
+                    <li><strong>With Your Consent:</strong> When you explicitly authorize sharing</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">5. Data Security</h2>
+                <p>We implement industry-standard security measures to protect your information:</p>
+                <ul>
+                    <li>Encryption of data in transit and at rest</li>
+                    <li>Regular security audits and monitoring</li>
+                    <li>Access controls and authentication requirements</li>
+                    <li>Secure token storage for social media connections</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">6. Your Rights and Choices</h2>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Access and download your personal information</li>
+                    <li>Correct or update your account information</li>
+                    <li>Delete your account and associated data</li>
+                    <li>Disconnect social media accounts at any time</li>
+                    <li>Opt out of marketing communications</li>
+                    <li>Request data portability</li>
+                </ul>
+            </div>
+
+            <div class="section">
+                <h2 class="section-title">7. Data Retention</h2>
+                <p>We retain your information for as long as your account is active or as needed to provide services.
+                    When you delete your account, we will delete your personal information within 30 days, except where
+                    required by law.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-sticky-note"></i>
+                </div>
+                <span>© 2024 PostIt. All rights reserved.</span>
+            </div>
+            <div class="footer-links">
+                <a href="/policy" class="footer-link">Privacy</a>
+                <a href="/tos" class="footer-link">Terms</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

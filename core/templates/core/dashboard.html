@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8 flex justify-between items-center">
+    <div>
+        <p class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-1">Available AI Tokens</p>
+        <h3 class="text-4xl font-bold text-blue-600">{{ balance }}</h3>
+    </div>
+    <a href="{% url 'store' %}"
+        class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-100 transition-colors">
+        + Top Up Wallet
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Create New Content</h2>
+
+    <form id="ai-form" method="POST" action="{% url 'generate_post' %}">
+        {% csrf_token %}
+
+        <div class="mb-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-2">What should the AI write about?</label>
+            <textarea name="prompt" rows="3"
+                class="w-full p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-y"
+                placeholder="e.g., A funny post about drinking too much coffee on a Monday..." required></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Voice & Tone</label>
+                <select name="tone"
+                    class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                    <option value="professional and authoritative">Professional</option>
+                    <option value="casual and friendly">Casual</option>
+                    <option value="witty, slightly chaotic, and sharp">Wildean Wit</option>
+                    <option value="deeply reflective, poetic, and romantic">Melancholic / Romantic</option>
+                    <option value="urgent and high-energy">Urgent / Hyped</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Post Format</label>
+                <select name="style"
+                    class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+                    <option value="a short, punchy social media update">Short Update</option>
+                    <option value="a long-form, thought-provoking LinkedIn article">Long-form Article</option>
+                    <option value="a compelling storytelling thread">Storytelling Thread</option>
+                    <option value="a direct promotional pitch">Promotional Pitch</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 mb-8">
+            <p class="text-sm font-semibold text-gray-700 mb-3">Prepare for platforms:</p>
+            <div class="flex flex-wrap gap-4">
+                <label class="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-gray-900">
+                    <input type="checkbox" name="platforms" value="facebook" checked
+                        class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"> Facebook
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-gray-900">
+                    <input type="checkbox" name="platforms" value="instagram"
+                        class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"> Instagram
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer text-gray-700 hover:text-gray-900">
+                    <input type="checkbox" name="platforms" value="linkedin"
+                        class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500"> LinkedIn
+                </label>
+            </div>
+        </div>
+
+        <button id="submit-btn" type="submit"
+            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-lg shadow-md transition-all text-lg">
+            ✨ Generate AI Post
+        </button>
+    </form>
+
+    {% if success_message %}
+    <div class="mt-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg font-medium">
+        {{ success_message }}
+    </div>
+    {% endif %}
+
+    {% if generated_text %}
+    <div class="mt-8 pt-8 border-t border-gray-100">
+        <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Generated Result</h3>
+
+        {% if generated_image %}
+        <div class="mb-6 rounded-xl overflow-hidden shadow-sm border border-gray-200">
+            <img src="{{ generated_image }}" alt="Generated visual context" class="w-full h-64 object-cover">
+        </div>
+        {% endif %}
+
+        <div class="prose max-w-none text-gray-800 leading-relaxed">
+            {{ generated_text|safe }}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    document.getElementById('ai-form').addEventListener('submit', function () {
+        var btn = document.getElementById('submit-btn');
+        btn.innerHTML = '🤖 Generating... Please wait (takes 3-5s)';
+        btn.classList.replace('bg-emerald-500', 'bg-gray-400');
+        btn.classList.replace('hover:bg-emerald-600', 'bg-gray-400');
+        btn.style.pointerEvents = 'none';
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PostIt Ultra AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+
+<body class="flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-gray-900 text-white flex flex-col">
+        <div class="h-16 flex items-center px-6 border-b border-gray-800">
+            <h1 class="text-xl font-bold text-emerald-400 tracking-wider">PostIt<span class="text-white">Ultra</span>
+            </h1>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <a href="{% url 'dashboard' %}"
+                class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <span class="font-medium">✨ AI Generator</span>
+            </a>
+            <a href="{% url 'drafts' %}"
+                class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <span class="font-medium">📚 History & Drafts</span>
+            </a>
+            <a href="{% url 'store' %}"
+                class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors">
+                <span class="font-medium">💳 Buy Tokens</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-800">
+            <a href="{% url 'integrations_settings' %}"
+                class="flex items-center px-4 py-3 text-gray-400 hover:text-white transition-colors">
+                <span class="text-sm font-medium">⚙️ Integrations</span>
+            </a>
+            <a href="{% url 'logout' %}"
+                class="flex items-center px-4 py-3 text-red-400 hover:text-red-300 transition-colors mt-1">
+                <span class="text-sm font-medium">🚪 Log Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-y-auto bg-gray-50">
+        <header class="h-16 bg-white shadow-sm flex items-center justify-between px-8 z-10">
+            <h2 class="text-lg font-semibold text-gray-700">Workspace: <span class="text-blue-600">{{ org_name }}</span>
+            </h2>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-500">Logged in as <strong class="text-gray-700">
+                        {{user.username}}</strong></span>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-5xl mx-auto w-full">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+</body>
+
+</html>
