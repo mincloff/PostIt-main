@@ -1,3 +1,4 @@
+{% load socialaccount %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -76,6 +77,35 @@
             display: inline-block;
         }
 
+        /* --- NEW: OAuth Button Styles --- */
+        .oauth-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            margin-bottom: 15px;
+            transition: opacity 0.2s;
+            box-sizing: border-box;
+        }
+
+        .oauth-btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn-facebook {
+            background-color: #1877F2;
+        }
+
+        .btn-google {
+            background-color: #DB4437;
+        }
+
         .platform-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -127,9 +157,6 @@
                 <div class="platform-box"><strong>Threads</strong> {% if 'threads' in connected_platforms %}<span
                         class="status-badge status-connected">Connected</span>{% else %}<span
                         class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>Snapchat</strong> {% if 'snapchat' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
                 <div class="platform-box"><strong>Pinterest</strong> {% if 'pinterest' in connected_platforms %}<span
                         class="status-badge status-connected">Connected</span>{% else %}<span
                         class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
@@ -142,11 +169,36 @@
                 <div class="platform-box"><strong>Reddit</strong> {% if 'reddit' in connected_platforms %}<span
                         class="status-badge status-connected">Connected</span>{% else %}<span
                         class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
+                <div class="platform-box"><strong>Blogger</strong> {% if 'blogger' in connected_platforms %}<span
+                        class="status-badge status-connected">Connected</span>{% else %}<span
+                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
             </div>
         </div>
 
+        <div class="card" style="border-left: 4px solid #3b82f6;">
+            <h3 style="margin-top: 0; color: #374151;">Official 1-Click Connections</h3>
+            <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">Securely authenticate without manual API
+                keys.</p>
+
+            <a href="{% provider_login_url 'facebook' method='oauth2' %}" class="oauth-btn btn-facebook">
+                <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
+                </svg>
+                Connect Facebook & Instagram
+            </a>
+
+            <a href="{% provider_login_url 'google' %}" class="oauth-btn btn-google">
+                <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                        d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
+                </svg>
+                Connect Blogger & YouTube
+            </a>
+        </div>
+
         <div class="card">
-            <h3 style="margin-top: 0; color: #374151;">Link a New Platform</h3>
+            <h3 style="margin-top: 0; color: #374151;">Manual API Override</h3>
             <form method="POST">
                 {% csrf_token %}
                 <div class="form-group">
@@ -157,7 +209,7 @@
                         <option value="linkedin">LinkedIn</option>
                         <option value="x">X (Twitter)</option>
                         <option value="threads">Threads</option>
-                        <option value="snapchat">Snapchat</option>
+                        <option value="blogger">Blogger</option>
                         <option value="pinterest">Pinterest</option>
                         <option value="youtube">YouTube</option>
                         <option value="tiktok">TikTok</option>

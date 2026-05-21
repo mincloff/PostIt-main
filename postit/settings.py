@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # The specific social networks we want to connect
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.linkedin_oauth2',
+    'allauth.socialaccount.providers.google',
 ]
 
 MIDDLEWARE = [
@@ -73,8 +74,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
-                'allauth.account.context_processors.account',
-                'allauth.socialaccount.context_processors.socialaccount',
                 ],
         },
     },
@@ -210,3 +209,9 @@ LOGIN_REDIRECT_URL = 'integrations_settings'
 
 # We just want to link accounts, not force them to sign up with email right now
 SOCIALACCOUNT_AUTO_SIGNUP = True
+
+# Skip the ugly intermediate HTML page and go straight to Google/Facebook
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+# CRITICAL: Tell Allauth to actually save the API Access Tokens to the database
+SOCIALACCOUNT_STORE_TOKENS = True

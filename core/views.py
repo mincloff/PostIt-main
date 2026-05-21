@@ -11,6 +11,9 @@ from django.shortcuts import redirect, get_object_or_404
 from .models import TransactionLog, SocialPost, PlatformIntegration 
 import markdown
 import requests
+# pyrefly: ignore [missing-import]
+from django.contrib import messages
+from core.publishers.blogger import BloggerPublisher
 
 
 import os
@@ -318,3 +321,27 @@ def integrations_settings(request):
         'active_integrations': active_integrations,
     }
     return render(request, 'core/settings.html', context)
+
+@login_required
+def publish_draft_now(request, post_id):
+    org = request.user.owned_organizations.first()
+    post = get_object_or_404(SocialPost, id=post_id, organization=org)
+
+    if 'blogger' in post.target_platforms.lower():
+        integration = PlatformIntegration.objects.filter(organization=org, platform='blogger', is_active=True).first()
+        if integration:
+            publisher = BloggerPublisher(integration)
+            success, result_message = publisher.publish(post.generated_text, post.image_url)
+            
+            if success:
+                post.status = 'published'
+                post.save()
+                messages.success(request, f"Successfully published to Blogger! URL: {result_message}")
+            else:
+                messages.error(request, f"Failed to publish to Blogger: {result_message}")
+        else:
+            messages.error(request, "No active Blogger integration found for your organization.")
+    else:
+        messages.error(request, "This post is not targeted for Blogger.")
+        
+    return redirect('drafts')
