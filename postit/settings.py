@@ -37,13 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'youtube',
-    'meta',
-    'auths',
-    'threads',
-    'x',
-    'tiktok',
-    'linkedin',
     'core',
     'django.contrib.sites', # Required by allauth
     'allauth',
