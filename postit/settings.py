@@ -47,6 +47,11 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.linkedin_oauth2',
     'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter_oauth2', # X / Twitter
+    'allauth.socialaccount.providers.tiktok',
+    'allauth.socialaccount.providers.wordpress',
+    'allauth.socialaccount.providers.tumblr',
+    'allauth.socialaccount.providers.discord',
 ]
 
 MIDDLEWARE = [
@@ -204,6 +209,47 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+            'https://www.googleapis.com/auth/blogger',
+            'https://www.googleapis.com/auth/youtube.upload',
+            'https://www.googleapis.com/auth/youtube.readonly',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+            'prompt': 'consent',
+        }
+    },
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email', 'public_profile', 'pages_manage_posts', 'pages_read_engagement', 'pages_show_list', 'instagram_basic', 'instagram_content_publish'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'cookie': True},
+        'EXCHANGE_TOKEN': True,
+    },
+    'linkedin_oauth2': {
+        'SCOPE': ['openid', 'profile', 'w_member_social', 'w_organization_social'],
+    },
+    'twitter_oauth2': {
+        'SCOPE': ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
+    },
+    'tiktok': {
+        'SCOPE': ['user.info.basic', 'video.upload', 'video.publish'],
+    },
+    'wordpress': {
+        'SCOPE': ['global'],
+    },
+    'tumblr': {
+        'SCOPE': ['write', 'offline_access'],
+    },
+    'discord': {
+        'SCOPE': ['identify', 'bot', 'webhook.incoming'],
+    }
+}
+
 # When a user successfully authenticates with Facebook, redirect them here
 LOGIN_REDIRECT_URL = 'integrations_settings'
 
@@ -215,3 +261,8 @@ SOCIALACCOUNT_LOGIN_ON_GET = True
 
 # CRITICAL: Tell Allauth to actually save the API Access Tokens to the database
 SOCIALACCOUNT_STORE_TOKENS = True
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_REQUIRED = False
+SOCIALACCOUNT_AUTO_SIGNUP = True
+
+LOGIN_REDIRECT_URL = '/settings/'

@@ -1,239 +1,82 @@
+{% extends 'core/base.html' %}
 {% load socialaccount %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SaaS Settings - PostIt Ultra AI</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6;
-            margin: 0;
-            padding: 40px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-        }
-
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            text-align: left;
-        }
-
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            float: right;
-        }
-
-        .status-connected {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-disconnected {
-            background: #f3f4f6;
-            color: #4b5563;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        input,
-        select {
-            padding: 10px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 14px;
-        }
-
-        .btn {
-            background: #3b82f6;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        /* --- NEW: OAuth Button Styles --- */
-        .oauth-btn {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            padding: 14px;
-            border-radius: 8px;
-            font-weight: bold;
-            text-decoration: none;
-            color: white;
-            margin-bottom: 15px;
-            transition: opacity 0.2s;
-            box-sizing: border-box;
-        }
-
-        .oauth-btn:hover {
-            opacity: 0.9;
-        }
-
-        .btn-facebook {
-            background-color: #1877F2;
-        }
-
-        .btn-google {
-            background-color: #DB4437;
-        }
-
-        .platform-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            padding-top: 10px;
-        }
-
-        .platform-box {
-            background: #f9fafb;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-    </style>
-</head>
-
-<body>
-
-    <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div>
-                <h2 style="margin: 0; color: #1f2937;">Integrations & API Vault</h2>
-                <p style="margin: 5px 0 0 0; color: #6b7280; font-size: 14px;">Manage connections for <strong>
-                        {{org_name }}</strong></p>
-            </div>
-            <a href="{% url 'dashboard' %}" class="btn" style="background: #10b981;">&larr; Back to Generator</a>
+{% block content %}
+<div class="max-w-7xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="flex-1 min-w-0">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Integrations & API Vault</h2>
+            <p class="mt-1 text-sm text-gray-500">Manage connections for <span class="font-semibold text-indigo-600">{{ org_name }}</span></p>
         </div>
-
-        <div class="card">
-            <h3 style="margin-top: 0; color: #374151; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px;">
-                Connection Status</h3>
-
-            <div class="platform-grid">
-                <div class="platform-box"><strong>Facebook</strong> {% if 'facebook' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>Instagram</strong> {% if 'instagram' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>LinkedIn</strong> {% if 'linkedin' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>X (Twitter)</strong> {% if 'x' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>Threads</strong> {% if 'threads' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>Pinterest</strong> {% if 'pinterest' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>YouTube</strong> {% if 'youtube' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>TikTok</strong> {% if 'tiktok' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>Reddit</strong> {% if 'reddit' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-                <div class="platform-box"><strong>Blogger</strong> {% if 'blogger' in connected_platforms %}<span
-                        class="status-badge status-connected">Connected</span>{% else %}<span
-                        class="status-badge status-disconnected">Not Configured</span>{% endif %}</div>
-            </div>
-        </div>
-
-        <div class="card" style="border-left: 4px solid #3b82f6;">
-            <h3 style="margin-top: 0; color: #374151;">Official 1-Click Connections</h3>
-            <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">Securely authenticate without manual API
-                keys.</p>
-
-            <a href="{% provider_login_url 'facebook' method='oauth2' %}" class="oauth-btn btn-facebook">
-                <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" />
-                </svg>
-                Connect Facebook & Instagram
+        <div class="mt-4 flex md:mt-0 md:ml-4">
+            <a href="{% url 'dashboard' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                &larr; Back to Dashboard
             </a>
-
-            <a href="{% provider_login_url 'google' %}" class="oauth-btn btn-google">
-                <svg style="width: 20px; height: 20px;" fill="currentColor" viewBox="0 0 24 24">
-                    <path
-                        d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
-                </svg>
-                Connect Blogger & YouTube
-            </a>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-top: 0; color: #374151;">Manual API Override</h3>
-            <form method="POST">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label style="font-weight: bold; color: #4b5563;">Target Network</label>
-                    <select name="platform" required>
-                        <option value="facebook">Facebook</option>
-                        <option value="instagram">Instagram</option>
-                        <option value="linkedin">LinkedIn</option>
-                        <option value="x">X (Twitter)</option>
-                        <option value="threads">Threads</option>
-                        <option value="blogger">Blogger</option>
-                        <option value="pinterest">Pinterest</option>
-                        <option value="youtube">YouTube</option>
-                        <option value="tiktok">TikTok</option>
-                        <option value="reddit">Reddit</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label style="font-weight: bold; color: #4b5563;">Page ID / Account Number / Handle</label>
-                    <input type="text" name="account_id" placeholder="e.g., @mybrand or 1084729482910" required>
-                </div>
-
-                <div class="form-group">
-                    <label style="font-weight: bold; color: #4b5563;">Secure Access Token (API Key)</label>
-                    <input type="password" name="access_token" placeholder="Paste system-generated permanent token here"
-                        required>
-                </div>
-
-                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Securely Save
-                    Credentials</button>
-            </form>
         </div>
     </div>
 
-</body>
+    <div class="bg-white shadow overflow-hidden sm:rounded-xl mb-8 border border-gray-100">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">1-Click Connections</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Securely authenticate without manual API keys. (Allauth process='connect')</p>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="{% provider_login_url 'google' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 shadow-sm transition-colors">
+                    Connect Google (YouTube/Blogger)
+                </a>
+                <a href="{% provider_login_url 'facebook' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition-colors">
+                    Connect Meta (Facebook/IG)
+                </a>
+                <a href="{% provider_login_url 'linkedin_oauth2' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-800 hover:bg-blue-900 shadow-sm transition-colors">
+                    Connect LinkedIn
+                </a>
+                <a href="{% provider_login_url 'twitter_oauth2' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-gray-900 hover:bg-black shadow-sm transition-colors">
+                    Connect X (Twitter)
+                </a>
+                <a href="{% provider_login_url 'tiktok' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 shadow-sm transition-colors">
+                    Connect TikTok
+                </a>
+                <a href="{% provider_login_url 'wordpress' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 shadow-sm transition-colors">
+                    Connect WordPress
+                </a>
+                <a href="{% provider_login_url 'tumblr' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-900 hover:bg-indigo-950 shadow-sm transition-colors">
+                    Connect Tumblr
+                </a>
+                <a href="{% provider_login_url 'discord' process='connect' %}" class="flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 shadow-sm transition-colors">
+                    Connect Discord
+                </a>
+            </div>
+        </div>
+    </div>
 
-</html>
+    <div class="bg-white shadow overflow-hidden sm:rounded-xl border border-gray-100">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-lg leading-6 font-medium text-gray-900">Connection Status</h3>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Your currently active integrations.</p>
+        </div>
+        <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for platform in "facebook,instagram,linkedin,x,youtube,tiktok,blogger,wordpress,tumblr,discord"|slice:":" %}
+                    <!-- Displaying status. Note: In real Django templates, we can't iterate over split strings easily without a custom filter, so hardcoding or passing a list is better. -->
+                {% endfor %}
+                
+                {% for p_name, display_name in active_integrations.first.PLATFORM_CHOICES %}
+                <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-between border border-gray-200">
+                    <span class="font-medium text-gray-900">{{ display_name }}</span>
+                    {% if p_name in connected_platforms %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            Connected
+                        </span>
+                    {% else %}
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Not Configured
+                        </span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

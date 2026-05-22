@@ -10,10 +10,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f3f4f6;
             margin: 0;
+            padding: 40px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
         }
 
         .card {
@@ -23,68 +24,112 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
-            text-align: center;
         }
 
         .form-group {
             margin-bottom: 20px;
-            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #4b5563;
+            font-size: 14px;
         }
 
         input {
-            width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
-            box-sizing: border-box;
-            margin-top: 5px;
+            font-size: 15px;
         }
 
         .btn {
-            background: #10b981;
+            background: #3b82f6;
             color: white;
             border: none;
-            padding: 12px;
+            padding: 14px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            width: 100%;
             font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
         }
 
-        .helptext,
-        ul {
-            font-size: 12px;
-            color: #6b7280;
-            list-style-type: none;
-            padding: 0;
-            margin-top: 5px;
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .message-board {
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            color: white;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background-color: #ef4444;
+        }
+
+        .alert-success {
+            background-color: #10b981;
         }
     </style>
 </head>
 
 <body>
+
     <div class="card">
-        <h2 style="margin-top: 0; color: #1f2937;">Create an Account</h2>
-        <p style="color: #6b7280; margin-bottom: 30px;">Start generating AI content today.</p>
+        <h2 style="margin-top: 0; color: #1f2937; text-align: center;">Create Your Account</h2>
+        <p style="text-align: center; color: #6b7280; font-size: 14px; margin-bottom: 30px;">Join PostIt Ultra AI today.
+        </p>
+
+        {% if messages %}
+        <div class="message-board">
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <form method="POST">
             {% csrf_token %}
-            {% for field in form %}
+
             <div class="form-group">
-                <label style="font-weight: bold; color: #4b5563;">{{ field.label }}</label>
-                {{ field }}
-                {% if field.help_text %}
-                <div class="helptext">{{ field.help_text|safe }}</div>
-                {% endif %}
+                <label>Username</label>
+                <input type="text" name="username" required placeholder="Choose a unique username">
             </div>
-            {% endfor %}
-            <button type="submit" class="btn">Create Account</button>
+
+            <div class="form-group">
+                <label>Email Address (Optional)</label>
+                <input type="email" name="email" placeholder="you@example.com">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required placeholder="Create a secure password">
+            </div>
+
+            <button type="submit" class="btn">Sign Up</button>
         </form>
-        <p style="margin-top: 20px; font-size: 14px; color: #6b7280;">Already have an account? <a
-                href="{% url 'login' %}" style="color: #3b82f6; text-decoration: none; font-weight: bold;">Log in</a>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 14px; color: #6b7280;">
+            Already have an account? <a href="{% url 'login' %}"
+                style="color: #3b82f6; text-decoration: none; font-weight: bold;">Sign in</a>
         </p>
     </div>
+
 </body>
 
 </html>

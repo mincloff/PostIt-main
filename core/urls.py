@@ -15,8 +15,9 @@ urlpatterns = [
     path('store/', views.store, name='store'),
     path('checkout/', views.checkout, name='checkout'),
     path('drafts/', views.drafts, name='drafts'),
+    path('drafts/new/', views.create_manual_draft, name='create_manual_draft'),
     path('drafts/<int:post_id>/edit/', views.edit_draft, name='edit_draft'),
     path('drafts/<int:post_id>/delete/', views.delete_draft, name='delete_draft'),
-    path('publish/<int:post_id>/', views.publish_draft_now, name='publish_now'),
     path('settings/', views.integrations_settings, name='integrations_settings'),
+    path('drafts/<int:post_id>/publish/', views.publish_draft_now, name='publish_now'),
 ]

@@ -71,6 +71,8 @@ class SocialPost(models.Model):
     target_platforms = models.CharField(max_length=255)
 
     image_url = models.URLField(max_length=500, blank=True, null=True)
+    image_file = models.FileField(upload_to='uploads/images/', blank=True, null=True)
+    video_file = models.FileField(upload_to='uploads/videos/', blank=True, null=True)
     
     # --- NEW: Scheduling Fields ---
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
@@ -93,6 +95,9 @@ class PlatformIntegration(models.Model):
         ('tiktok', 'TikTok'),
         ('reddit', 'Reddit'),
         ('blogger', 'Blogger'),
+        ('wordpress', 'WordPress'),
+        ('tumblr', 'Tumblr'),
+        ('discord', 'Discord'),
     ]
     
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='integrations')

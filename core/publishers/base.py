@@ -4,5 +4,5 @@ class BasePublisher:
         self.access_token = integration.access_token
         self.account_id = integration.account_id
 
-    def publish(self, post_text, image_url=None):
+    def publish(self, text, image_url=None, image_path=None, video_path=None, **kwargs):
         raise NotImplementedError("Each platform must implement its own publish method.")

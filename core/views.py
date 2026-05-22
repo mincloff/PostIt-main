@@ -13,8 +13,8 @@ import markdown
 import requests
 # pyrefly: ignore [missing-import]
 from django.contrib import messages
-from core.publishers.blogger import BloggerPublisher
-
+from core.publishers import get_publisher
+from django.contrib.auth.models import User
 
 import os
 # pyrefly: ignore [missing-import]
@@ -214,20 +214,43 @@ def drafts(request):
     return render(request, 'core/drafts.html', context)
 
 def register_user(request):
-    # If they are already logged in, send them to the app
+    # 1. If they are already logged in, bounce them to the app
     if request.user.is_authenticated:
         return redirect('dashboard')
-        
+
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save() # <-- THIS TRIGGERS YOUR SIGNAL MAGIC!
-            login(request, user) # Automatically log them in
+        # Grab the raw data from your custom HTML form
+        username = request.POST.get('username')
+        email = request.POST.get('email', '') # Email is optional in your form
+        password = request.POST.get('password')
+
+        # 2. Validation: Make sure they didn't submit a blank form
+        if not username or not password:
+            messages.error(request, "Please provide both a username and a password.")
+            return redirect('register') # Change 'register' if your url name is different
+
+        # 3. Validation: Prevent duplicate usernames from crashing the database
+        if User.objects.filter(username=username).exists():
+            messages.error(request, "That username is already taken. Please try another one.")
+            return redirect('register')
+
+        # 4. Create the User safely
+        try:
+            user = User.objects.create_user(username=username, email=email, password=password)
+            
+            # 5. Log them in (using the multi-backend fix we discovered!)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            
+            # 6. Send them to the dashboard
+            messages.success(request, f"Welcome to PostIt Ultra, {username}!")
             return redirect('dashboard')
-    else:
-        form = UserCreationForm()
-        
-    return render(request, 'core/register.html', {'form': form})
+            
+        except Exception as e:
+            messages.error(request, f"System error creating account: {str(e)}")
+            return redirect('register')
+
+    # If it's a GET request, just show the blank form
+    return render(request, 'core/register.html') # Adjust this template path if yours is inside 'core/'
 
 def login_user(request):
     if request.user.is_authenticated:
@@ -237,7 +260,7 @@ def login_user(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('dashboard')
     else:
         form = AuthenticationForm()
@@ -327,21 +350,85 @@ def publish_draft_now(request, post_id):
     org = request.user.owned_organizations.first()
     post = get_object_or_404(SocialPost, id=post_id, organization=org)
 
-    if 'blogger' in post.target_platforms.lower():
-        integration = PlatformIntegration.objects.filter(organization=org, platform='blogger', is_active=True).first()
-        if integration:
-            publisher = BloggerPublisher(integration)
-            success, result_message = publisher.publish(post.generated_text, post.image_url)
+    platforms = [p.strip() for p in post.target_platforms.split(',') if p.strip()]
+    if not platforms:
+        messages.error(request, "No platforms selected for this draft.")
+        return redirect('drafts')
+
+    success_count = 0
+    fail_count = 0
+
+    for platform in platforms:
+        platform = platform.lower()
+        integration = org.integrations.filter(platform=platform, is_active=True).first()
+        if not integration:
+            messages.error(request, f"❌ {platform.capitalize()} Failed: No active integration found.")
+            fail_count += 1
+            continue
             
-            if success:
-                post.status = 'published'
-                post.save()
-                messages.success(request, f"Successfully published to Blogger! URL: {result_message}")
-            else:
-                messages.error(request, f"Failed to publish to Blogger: {result_message}")
-        else:
-            messages.error(request, "No active Blogger integration found for your organization.")
-    else:
-        messages.error(request, "This post is not targeted for Blogger.")
+        try:
+            publisher = get_publisher(platform, integration)
+        except ValueError:
+            messages.error(request, f"❌ {platform.capitalize()} Failed: Publisher not implemented.")
+            fail_count += 1
+            continue
+
+        image_path = post.image_file.path if post.image_file else None
+        video_path = post.video_file.path if post.video_file else None
+
+        kwargs = {'image_url': post.image_url}
+        if image_path: kwargs['image_path'] = image_path
+        if video_path: kwargs['video_path'] = video_path
         
+        # Filter kwargs to only what the publish method accepts
+        sig = inspect.signature(publisher.publish)
+        valid_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters or any(p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values())}
+
+        try:
+            success, response = publisher.publish(post.generated_text, **valid_kwargs)
+            if success:
+                messages.success(request, f"✅ {platform.capitalize()} Success!")
+                success_count += 1
+            else:
+                messages.error(request, f"❌ {platform.capitalize()} Failed: {response}")
+                fail_count += 1
+        except Exception as e:
+            messages.error(request, f"❌ {platform.capitalize()} Failed: System error ({str(e)})")
+            fail_count += 1
+
+    if success_count > 0 and fail_count == 0:
+        post.status = 'published'
+        post.save()
+    elif success_count > 0:
+        post.status = 'published' # Partially published
+        post.save()
+
     return redirect('drafts')
+
+@login_required
+def create_manual_draft(request):
+    org = request.user.owned_organizations.first()
+    if not org:
+        return redirect('dashboard')
+
+    if request.method == 'POST':
+        generated_text = request.POST.get('generated_text', '')
+        platforms_list = request.POST.getlist('platforms')
+        platforms_string = ",".join(platforms_list) if platforms_list else ""
+        
+        image_file = request.FILES.get('image_file')
+        video_file = request.FILES.get('video_file')
+        
+        post = SocialPost.objects.create(
+            organization=org,
+            original_prompt="Manual Draft",
+            generated_text=generated_text,
+            target_platforms=platforms_string,
+            image_file=image_file,
+            video_file=video_file,
+            status='draft'
+        )
+        messages.success(request, "Manual draft created successfully!")
+        return redirect('drafts')
+        
+    return render(request, 'core/draft_form.html')
