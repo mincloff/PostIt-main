@@ -20,4 +20,7 @@ urlpatterns = [
     path('drafts/<int:post_id>/delete/', views.delete_draft, name='delete_draft'),
     path('settings/', views.integrations_settings, name='integrations_settings'),
     path('drafts/<int:post_id>/publish/', views.publish_draft_now, name='publish_now'),
+    path('drafts/<int:post_id>/status/', views.check_post_status, name='check_post_status'),
+    path('calendar/', views.calendar_view, name='calendar'),
+    path('api/calendar/posts/', views.api_get_calendar_posts, name='api_calendar_posts'),
 ]

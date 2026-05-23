@@ -1,0 +1,192 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-8">
+    <div class="mb-6 flex items-center justify-between">
+        <h2 class="text-3xl font-bold text-gray-900" id="calendar-header">Content Calendar</h2>
+        <div class="flex space-x-2">
+            <button id="prev-month" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                &larr; Prev
+            </button>
+            <button id="today-btn" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                Today
+            </button>
+            <button id="next-month" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                Next &rarr;
+            </button>
+        </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="bg-white shadow overflow-hidden sm:rounded-xl border border-gray-200">
+        <!-- Days of week -->
+        <div class="grid grid-cols-7 border-b border-gray-200 bg-gray-50 text-center">
+            <div class="py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider border-r border-gray-200">Sun</div>
+            <div class="py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider border-r border-gray-200">Mon</div>
+            <div class="py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider border-r border-gray-200">Tue</div>
+            <div class="py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider border-r border-gray-200">Wed</div>
+            <div class="py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider border-r border-gray-200">Thu</div>
+            <div class="py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider border-r border-gray-200">Fri</div>
+            <div class="py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Sat</div>
+        </div>
+        <!-- Dates Grid -->
+        <div id="calendar-grid" class="grid grid-cols-7 auto-rows-[minmax(120px,_1fr)]">
+            <!-- Dynamically injected by JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarGrid = document.getElementById('calendar-grid');
+        const calendarHeader = document.getElementById('calendar-header');
+        
+        let currentDate = new Date();
+        let viewingMonth = currentDate.getMonth(); 
+        let viewingYear = currentDate.getFullYear();
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        function getStatusBadge(status) {
+            let colorClasses = '';
+            if (status === 'scheduled') colorClasses = 'bg-blue-100 text-blue-800 border-blue-200';
+            else if (status === 'published') colorClasses = 'bg-green-100 text-green-800 border-green-200';
+            else if (status === 'failed') colorClasses = 'bg-red-100 text-red-800 border-red-200';
+            else if (status === 'processing') colorClasses = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            else colorClasses = 'bg-gray-100 text-gray-800 border-gray-200';
+            
+            return `<span class="inline-flex mt-1.5 items-center px-2 py-0.5 rounded text-[10px] font-bold border ${colorClasses}">
+                        ${status.charAt(0).toUpperCase() + status.slice(1)}
+                    </span>`;
+        }
+
+        async function fetchPostsAndRender(year, month) {
+            calendarHeader.innerText = `${monthNames[month]} ${year}`;
+
+            // Calculate exact start and end of the month block
+            // To ensure we get posts that might bleed across timezone edges, we query a wide window
+            const queryStart = new Date(year, month - 1, 20); // Pad start
+            const queryEnd = new Date(year, month + 1, 10); // Pad end
+
+            calendarGrid.innerHTML = '<div class="col-span-7 p-10 text-center text-gray-500 font-medium">Loading calendar...</div>';
+
+            try {
+                const response = await fetch(`/api/calendar/posts/?start=${queryStart.toISOString()}&end=${queryEnd.toISOString()}`);
+                if (!response.ok) throw new Error('API Error');
+                const posts = await response.json();
+                renderGrid(year, month, posts);
+            } catch (error) {
+                console.error('Error fetching calendar data:', error);
+                calendarGrid.innerHTML = '<div class="col-span-7 p-10 text-center text-red-500 font-medium">Failed to load calendar data. Please try again.</div>';
+            }
+        }
+
+        function renderGrid(year, month, posts) {
+            calendarGrid.innerHTML = '';
+            
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            
+            const startingDayOfWeek = firstDay.getDay(); 
+            const totalDays = lastDay.getDate();
+
+            const postsByDay = {};
+            posts.forEach(post => {
+                // The native JS Date engine automatically translates UTC ISO strings to Browser Local Time!
+                const postDate = new Date(post.scheduled_time);
+                if (postDate.getMonth() === month && postDate.getFullYear() === year) {
+                    const day = postDate.getDate();
+                    if (!postsByDay[day]) postsByDay[day] = [];
+                    postsByDay[day].push(post);
+                }
+            });
+
+            // Blank cells for preceding days
+            for (let i = 0; i < startingDayOfWeek; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'border-b border-r border-gray-200 bg-gray-50 min-h-[120px] p-2';
+                calendarGrid.appendChild(cell);
+            }
+
+            const today = new Date();
+            const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
+
+            // Generate the exact days
+            for (let day = 1; day <= totalDays; day++) {
+                const cell = document.createElement('div');
+                const isToday = isCurrentMonth && day === today.getDate();
+                
+                let dayClasses = 'border-b border-r border-gray-200 bg-white min-h-[120px] p-2 relative hover:bg-gray-50 transition-colors flex flex-col';
+                if (isToday) dayClasses += ' bg-indigo-50/30'; 
+                cell.className = dayClasses;
+
+                let html = `
+                    <div class="text-right mb-1">
+                        <span class="text-sm font-semibold ${isToday ? 'bg-indigo-600 text-white rounded-full w-7 h-7 inline-flex items-center justify-center shadow-sm' : 'text-gray-700'}">${day}</span>
+                    </div>
+                    <div class="flex-1 space-y-2 overflow-y-auto pr-1">
+                `;
+                
+                if (postsByDay[day]) {
+                    postsByDay[day].forEach(post => {
+                        // Extract time strictly for the badge
+                        const postDate = new Date(post.scheduled_time);
+                        const timeString = postDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                        html += `
+                            <div onclick="window.location.href='/drafts/${post.id}/edit/'" class="cursor-pointer group p-2 rounded-lg border border-gray-200 hover:border-indigo-400 hover:shadow-md transition-all text-xs bg-white">
+                                <div class="font-semibold text-gray-800 truncate mb-0.5" title="${post.snippet}">${post.snippet || '(Media Only)'}</div>
+                                <div class="text-gray-500 text-[10px] truncate mb-1">Platforms: ${post.platforms}</div>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span class="text-indigo-600 font-medium text-[10px] bg-indigo-50 px-1.5 py-0.5 rounded">${timeString}</span>
+                                    ${getStatusBadge(post.status)}
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                html += `</div>`;
+                cell.innerHTML = html;
+                calendarGrid.appendChild(cell);
+            }
+
+            // Fill trailing blanks
+            const totalCells = startingDayOfWeek + totalDays;
+            const remainingCells = (7 - (totalCells % 7)) % 7;
+            for (let i = 0; i < remainingCells; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'border-b border-r border-gray-200 bg-gray-50 min-h-[120px] p-2';
+                calendarGrid.appendChild(cell);
+            }
+        }
+
+        document.getElementById('prev-month').addEventListener('click', () => {
+            viewingMonth--;
+            if (viewingMonth < 0) {
+                viewingMonth = 11;
+                viewingYear--;
+            }
+            fetchPostsAndRender(viewingYear, viewingMonth);
+        });
+
+        document.getElementById('next-month').addEventListener('click', () => {
+            viewingMonth++;
+            if (viewingMonth > 11) {
+                viewingMonth = 0;
+                viewingYear++;
+            }
+            fetchPostsAndRender(viewingYear, viewingMonth);
+        });
+
+        document.getElementById('today-btn').addEventListener('click', () => {
+            viewingMonth = currentDate.getMonth();
+            viewingYear = currentDate.getFullYear();
+            fetchPostsAndRender(viewingYear, viewingMonth);
+        });
+
+        // Bootstrap
+        fetchPostsAndRender(viewingYear, viewingMonth);
+    });
+</script>
+{% endblock %}

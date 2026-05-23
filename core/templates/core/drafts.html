@@ -110,15 +110,19 @@
         <div class="card">
             <div class="meta-info">
                 <div>
-                    {% if post.status == 'scheduled' %}
-                    <span
-                        style="background: #fef08a; color: #854d0e; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;">🕒
-                        Scheduled: {{ post.scheduled_time|date:"M j, g:i a" }}</span>
-                    {% else %}
-                    <span
-                        style="background: #e5e7eb; color: #4b5563; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;">📝
-                        Draft</span>
-                    {% endif %}
+                    <span id="status-badge-{{ post.id }}">
+                        {% if post.status == 'scheduled' %}
+                        <span style="background: #fef08a; color: #854d0e; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;">🕒 Scheduled: {{ post.scheduled_time|date:"M j, g:i a" }}</span>
+                        {% elif post.status == 'processing' %}
+                        <span class="processing-badge" data-post-id="{{ post.id }}" style="background: #bfdbfe; color: #1e3a8a; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;">⏳ Processing...</span>
+                        {% elif post.status == 'published' %}
+                        <span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;">✅ Published</span>
+                        {% elif post.status == 'failed' %}
+                        <span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;" title="{{ post.error_message }}">❌ Failed</span>
+                        {% else %}
+                        <span style="background: #e5e7eb; color: #4b5563; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;">📝 Draft</span>
+                        {% endif %}
+                    </span>
                     <span class="date">Created: {{ post.created_at|date:"M j, Y" }}</span>
                 </div>
                 <span class="platforms">{{ post.target_platforms }}</span>
@@ -158,6 +162,31 @@
         {% endfor %}
     </div>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const processingBadges = document.querySelectorAll('.processing-badge');
+            
+            processingBadges.forEach(badge => {
+                const postId = badge.getAttribute('data-post-id');
+                const badgeContainer = document.getElementById(`status-badge-${postId}`);
+                
+                const interval = setInterval(() => {
+                    fetch(`/drafts/${postId}/status/`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'published') {
+                                badgeContainer.innerHTML = `<span style="background: #d1fae5; color: #065f46; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;">✅ Published</span>`;
+                                clearInterval(interval);
+                            } else if (data.status === 'failed') {
+                                badgeContainer.innerHTML = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-right: 10px;" title="${data.error_message}">❌ Failed</span>`;
+                                clearInterval(interval);
+                            }
+                        })
+                        .catch(err => console.error("Error polling status:", err));
+                }, 3000);
+            });
+        });
+    </script>
 </body>
 
 </html>

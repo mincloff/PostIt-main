@@ -49,9 +49,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter_oauth2', # X / Twitter
     'allauth.socialaccount.providers.tiktok',
-    'allauth.socialaccount.providers.wordpress',
     'allauth.socialaccount.providers.tumblr',
     'allauth.socialaccount.providers.discord',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -239,9 +239,6 @@ SOCIALACCOUNT_PROVIDERS = {
     'tiktok': {
         'SCOPE': ['user.info.basic', 'video.upload', 'video.publish'],
     },
-    'wordpress': {
-        'SCOPE': ['global'],
-    },
     'tumblr': {
         'SCOPE': ['write', 'offline_access'],
     },
@@ -249,6 +246,14 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['identify', 'bot', 'webhook.incoming'],
     }
 }
+
+# --- CELERY CONFIGURATION ---
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
 
 # When a user successfully authenticates with Facebook, redirect them here
 LOGIN_REDIRECT_URL = 'integrations_settings'

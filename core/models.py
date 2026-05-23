@@ -10,6 +10,7 @@ class Organization(models.Model):
     name = models.CharField(max_length=255)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_organizations')
     is_reseller = models.BooleanField(default=False)
+    timezone = models.CharField(max_length=64, default='UTC')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -62,7 +63,9 @@ class SocialPost(models.Model):
     STATUS_CHOICES = [
         ('draft', 'Draft'),
         ('scheduled', 'Scheduled'),
+        ('processing', 'Processing'),
         ('published', 'Published'),
+        ('failed', 'Failed'),
     ]
 
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='posts')
@@ -77,6 +80,7 @@ class SocialPost(models.Model):
     # --- NEW: Scheduling Fields ---
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
     scheduled_time = models.DateTimeField(null=True, blank=True)
+    error_message = models.TextField(blank=True, null=True, help_text="Stores the failure reason from the background worker")
     
     created_at = models.DateTimeField(auto_now_add=True)
     is_published = models.BooleanField(default=False) # We will keep this for backwards compatibility for now

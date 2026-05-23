@@ -16,6 +16,29 @@
     </div>
 
     <div class="bg-white shadow overflow-hidden sm:rounded-xl mb-8 border border-gray-100">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Organization Timezone</h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">Set the default timezone for scheduled posts.</p>
+            </div>
+        </div>
+        <div class="p-6">
+            <form action="{% url 'integrations_settings' %}" method="POST" class="flex items-center space-x-4">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_timezone">
+                <select name="timezone" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm border">
+                    {% for tz in all_timezones %}
+                        <option value="{{ tz }}" {% if tz == org.timezone %}selected{% endif %}>{{ tz }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Save Timezone
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-xl mb-8 border border-gray-100">
         <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-gray-50">
             <h3 class="text-lg leading-6 font-medium text-gray-900">1-Click Connections</h3>
             <p class="mt-1 max-w-2xl text-sm text-gray-500">Securely authenticate without manual API keys. (Allauth process='connect')</p>

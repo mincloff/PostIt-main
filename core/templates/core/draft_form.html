@@ -52,6 +52,19 @@
                 </div>
             </div>
 
+            <!-- Scheduled Time -->
+            <div class="border-t border-gray-200 pt-6">
+                <h3 class="text-sm font-semibold text-gray-700 mb-4">Schedule Post (Optional)</h3>
+                <div class="flex items-center space-x-4">
+                    <input type="datetime-local" id="scheduled_time" name="scheduled_time" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block sm:text-sm border-gray-300 rounded-md p-2 border">
+                    <span class="text-sm text-gray-500">
+                        Timezone: <span class="font-medium text-gray-700">{{ org.timezone }}</span> 
+                        <a href="{% url 'integrations_settings' %}" class="text-indigo-600 hover:text-indigo-500 text-xs ml-2">(Change in Settings)</a>
+                    </span>
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Leave blank to save as a regular draft.</p>
+            </div>
+
             <!-- Target Platforms -->
             <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-4">Target Platforms</h3>

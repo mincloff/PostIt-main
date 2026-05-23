@@ -8,18 +8,23 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 # pyrefly: ignore [missing-import]
 from django.shortcuts import redirect, get_object_or_404
+from django.http import JsonResponse
 from .models import TransactionLog, SocialPost, PlatformIntegration 
 import markdown
 import requests
 # pyrefly: ignore [missing-import]
 from django.contrib import messages
 from core.publishers import get_publisher
+# pyrefly: ignore [missing-import]
 from django.contrib.auth.models import User
+from .tasks import process_universal_publish
 
 import os
 # pyrefly: ignore [missing-import]
 import google.generativeai as genai
-
+import pytz
+from datetime import datetime
+from django.utils import timezone
 
 @login_required
 def dashboard(request):
@@ -315,8 +320,18 @@ def integrations_settings(request):
     if not org:
         return redirect('dashboard')
 
-    # If the user is saving a new token
+    # If the user is saving a new token or timezone
     if request.method == 'POST':
+        if 'timezone' in request.POST:
+            timezone_pref = request.POST.get('timezone')
+            if timezone_pref in pytz.all_timezones:
+                org.timezone = timezone_pref
+                org.save()
+                messages.success(request, "Timezone updated successfully.")
+            else:
+                messages.error(request, "Invalid timezone selected.")
+            return redirect('integrations_settings')
+
         platform = request.POST.get('platform')
         access_token = request.POST.get('access_token')
         account_id = request.POST.get('account_id')
@@ -339,9 +354,11 @@ def integrations_settings(request):
     connected_platforms = [integration.platform for integration in active_integrations]
 
     context = {
+        'org': org,
         'org_name': org.name,
         'connected_platforms': connected_platforms,
         'active_integrations': active_integrations,
+        'all_timezones': pytz.all_timezones,
     }
     return render(request, 'core/settings.html', context)
 
@@ -355,54 +372,13 @@ def publish_draft_now(request, post_id):
         messages.error(request, "No platforms selected for this draft.")
         return redirect('drafts')
 
-    success_count = 0
-    fail_count = 0
-
-    for platform in platforms:
-        platform = platform.lower()
-        integration = org.integrations.filter(platform=platform, is_active=True).first()
-        if not integration:
-            messages.error(request, f"❌ {platform.capitalize()} Failed: No active integration found.")
-            fail_count += 1
-            continue
-            
-        try:
-            publisher = get_publisher(platform, integration)
-        except ValueError:
-            messages.error(request, f"❌ {platform.capitalize()} Failed: Publisher not implemented.")
-            fail_count += 1
-            continue
-
-        image_path = post.image_file.path if post.image_file else None
-        video_path = post.video_file.path if post.video_file else None
-
-        kwargs = {'image_url': post.image_url}
-        if image_path: kwargs['image_path'] = image_path
-        if video_path: kwargs['video_path'] = video_path
-        
-        # Filter kwargs to only what the publish method accepts
-        sig = inspect.signature(publisher.publish)
-        valid_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters or any(p.kind == inspect.Parameter.VAR_KEYWORD for p in sig.parameters.values())}
-
-        try:
-            success, response = publisher.publish(post.generated_text, **valid_kwargs)
-            if success:
-                messages.success(request, f"✅ {platform.capitalize()} Success!")
-                success_count += 1
-            else:
-                messages.error(request, f"❌ {platform.capitalize()} Failed: {response}")
-                fail_count += 1
-        except Exception as e:
-            messages.error(request, f"❌ {platform.capitalize()} Failed: System error ({str(e)})")
-            fail_count += 1
-
-    if success_count > 0 and fail_count == 0:
-        post.status = 'published'
-        post.save()
-    elif success_count > 0:
-        post.status = 'published' # Partially published
-        post.save()
-
+    # Change status to processing and queue the task
+    post.status = 'processing'
+    post.save()
+    
+    process_universal_publish.delay(post.id)
+    
+    messages.success(request, "🚀 Your post has been queued for background publishing!")
     return redirect('drafts')
 
 @login_required
@@ -419,6 +395,28 @@ def create_manual_draft(request):
         image_file = request.FILES.get('image_file')
         video_file = request.FILES.get('video_file')
         
+        scheduled_time_str = request.POST.get('scheduled_time')
+        scheduled_time = None
+        status = 'draft'
+
+        if scheduled_time_str:
+            try:
+                # Parse naive datetime from HTML5 input
+                naive_dt = datetime.strptime(scheduled_time_str, "%Y-%m-%dT%H:%M")
+                
+                # Localize to org's timezone
+                org_tz = pytz.timezone(org.timezone)
+                localized_dt = org_tz.localize(naive_dt)
+                
+                # Convert to UTC before saving
+                scheduled_time = localized_dt.astimezone(pytz.utc)
+                
+                if scheduled_time > timezone.now():
+                    status = 'scheduled'
+            except Exception as e:
+                messages.error(request, f"Invalid date format: {e}")
+                return redirect('create_manual_draft')
+        
         post = SocialPost.objects.create(
             organization=org,
             original_prompt="Manual Draft",
@@ -426,9 +424,73 @@ def create_manual_draft(request):
             target_platforms=platforms_string,
             image_file=image_file,
             video_file=video_file,
-            status='draft'
+            scheduled_time=scheduled_time,
+            status=status
         )
-        messages.success(request, "Manual draft created successfully!")
+        
+        if status == 'scheduled':
+            messages.success(request, f"Post scheduled for {scheduled_time_str} ({org.timezone})!")
+        else:
+            messages.success(request, "Manual draft created successfully!")
+            
         return redirect('drafts')
         
-    return render(request, 'core/draft_form.html')
+    context = {'org': org}
+    return render(request, 'core/draft_form.html', context)
+
+@login_required
+def check_post_status(request, post_id):
+    org = request.user.owned_organizations.first()
+    post = get_object_or_404(SocialPost, id=post_id, organization=org)
+    
+    return JsonResponse({
+        'status': post.status,
+        'error_message': post.error_message or ''
+    })
+
+@login_required
+def calendar_view(request):
+    org = request.user.owned_organizations.first()
+    context = {'org_name': org.name if org else "No Organization Linked"}
+    return render(request, 'core/calendar.html', context)
+
+@login_required
+def api_get_calendar_posts(request):
+    org = request.user.owned_organizations.first()
+    if not org:
+        return JsonResponse({'error': 'No organization found'}, status=403)
+        
+    start_str = request.GET.get('start')
+    end_str = request.GET.get('end')
+    
+    if not start_str or not end_str:
+        return JsonResponse({'error': 'Missing start or end parameters'}, status=400)
+        
+    try:
+        # Simple ISO 8601 parsing (handles basic JS toISOString())
+        start_dt = datetime.fromisoformat(start_str.replace('Z', '+00:00'))
+        end_dt = datetime.fromisoformat(end_str.replace('Z', '+00:00'))
+    except ValueError:
+        return JsonResponse({'error': 'Invalid date format. Use ISO 8601.'}, status=400)
+        
+    posts = SocialPost.objects.filter(
+        organization=org,
+        scheduled_time__range=[start_dt, end_dt]
+    ).order_by('scheduled_time')
+    
+    data = []
+    for post in posts:
+        # Create a brief snippet
+        import re
+        clean_text = re.sub('<[^<]+>', '', post.generated_text)
+        snippet = clean_text[:40] + '...' if len(clean_text) > 40 else clean_text
+        
+        data.append({
+            'id': post.id,
+            'snippet': snippet,
+            'platforms': post.target_platforms,
+            'status': post.status,
+            'scheduled_time': post.scheduled_time.isoformat()
+        })
+        
+    return JsonResponse(data, safe=False)
