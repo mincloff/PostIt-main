@@ -8,7 +8,10 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 # pyrefly: ignore [missing-import]
 from django.shortcuts import redirect, get_object_or_404
+# pyrefly: ignore [missing-import]
 from django.http import JsonResponse
+import json
+from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import TransactionLog, SocialPost, PlatformIntegration 
 import markdown
 import requests
@@ -24,6 +27,7 @@ import os
 import google.generativeai as genai
 import pytz
 from datetime import datetime
+# pyrefly: ignore [missing-import]
 from django.utils import timezone
 
 @login_required
@@ -493,4 +497,64 @@ def api_get_calendar_posts(request):
             'scheduled_time': post.scheduled_time.isoformat()
         })
         
-    return JsonResponse(data, safe=False)
+    return JsonResponse(data, safe=False)
+
+@login_required
+@ensure_csrf_cookie
+def api_generate_copy(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid method'}, status=405)
+        
+    org = request.user.owned_organizations.first()
+    if not org or not hasattr(org, 'wallet'):
+        return JsonResponse({'error': 'No organization or wallet linked. Copilot disabled.'}, status=403)
+        
+    try:
+        data = json.loads(request.body)
+        topic = data.get('topic', '').strip()
+        platforms = data.get('platforms', [])
+        
+        if not topic:
+            return JsonResponse({'error': 'Please provide a topic.'}, status=400)
+            
+        wallet = org.wallet
+        if wallet.balance < 500:
+            return JsonResponse({'error': 'Insufficient tokens. Please top up your wallet.'}, status=403)
+
+        # Build System Prompt
+        platform_instructions = ""
+        if 'x' in platforms or 'twitter' in platforms:
+            platform_instructions += "- The copy must be strictly under 280 characters to fit on Twitter/X.\n"
+        if 'linkedin' in platforms:
+            platform_instructions += "- Include professional formatting, line breaks, and a clear call to action suitable for LinkedIn.\n"
+        if 'tiktok' in platforms or 'youtube' in platforms:
+            platform_instructions += "- This will likely accompany a video. Keep it extremely catchy and engaging.\n"
+
+        system_instruction = (
+            "You are an expert Social Media Manager. Write a highly engaging, native-feeling social media post "
+            f"about the following topic. Do not include hashtags unless highly relevant. Do not include a title.\n\nPlatform Constraints:\n{platform_instructions}"
+        )
+        full_prompt = f"{system_instruction}\n\nTopic: {topic}"
+
+        # Call Gemini
+        genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+        model = genai.GenerativeModel('gemini-flash-latest')
+        
+        response = model.generate_content(full_prompt)
+        raw_text = response.text
+        
+        # Calculate tokens dynamically
+        total_chars = len(full_prompt) + len(raw_text)
+        exact_tokens_used = max(1, total_chars // 4)
+        
+        # Deduct
+        if wallet.deduct_tokens(exact_tokens_used):
+            TransactionLog.objects.create(
+                wallet=wallet, action_type="COPILOT_API_CALL", tokens_deducted=exact_tokens_used, status="SUCCESS"
+            )
+            return JsonResponse({'generated_text': raw_text.strip()})
+        else:
+            return JsonResponse({'error': 'Insufficient tokens to complete request.'}, status=403)
+            
+    except Exception as e:
+        return JsonResponse({'error': f'AI Service Error: {str(e)}'}, status=500)

@@ -23,4 +23,5 @@ urlpatterns = [
     path('drafts/<int:post_id>/status/', views.check_post_status, name='check_post_status'),
     path('calendar/', views.calendar_view, name='calendar'),
     path('api/calendar/posts/', views.api_get_calendar_posts, name='api_calendar_posts'),
+    path('api/generate/copy/', views.api_generate_copy, name='api_generate_copy'),
 ]

@@ -11,6 +11,23 @@
         <form action="{% url 'create_manual_draft' %}" method="POST" enctype="multipart/form-data" class="px-8 py-8 space-y-8">
             {% csrf_token %}
 
+            <!-- AI Copilot -->
+            <div class="bg-indigo-50 rounded-xl p-6 border border-indigo-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-indigo-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        AI Copilot
+                    </h3>
+                </div>
+                <div class="flex space-x-4">
+                    <input type="text" id="ai_topic" class="flex-1 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md p-3" placeholder="What is this post about?">
+                    <button type="button" id="btn_generate" class="inline-flex items-center px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">
+                        ✨ Generate with AI
+                    </button>
+                </div>
+                <p id="ai_error" class="mt-2 text-sm text-red-600 hidden"></p>
+            </div>
+
             <!-- Text Content -->
             <div>
                 <label for="generated_text" class="block text-sm font-semibold text-gray-700">Post Content</label>
@@ -130,4 +147,65 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btnGenerate = document.getElementById('btn_generate');
+        const aiTopic = document.getElementById('ai_topic');
+        const aiError = document.getElementById('ai_error');
+        const generatedText = document.getElementById('generated_text');
+        
+        btnGenerate.addEventListener('click', async function () {
+            const topic = aiTopic.value.trim();
+            if (!topic) {
+                aiError.textContent = 'Please enter a topic first.';
+                aiError.classList.remove('hidden');
+                return;
+            }
+            
+            // Get selected platforms
+            const platformCheckboxes = document.querySelectorAll('input[name="platforms"]:checked');
+            const platforms = Array.from(platformCheckboxes).map(cb => cb.value);
+            
+            aiError.classList.add('hidden');
+            const originalText = btnGenerate.innerHTML;
+            btnGenerate.innerHTML = '✨ Thinking...';
+            btnGenerate.disabled = true;
+            btnGenerate.classList.add('opacity-75', 'cursor-not-allowed');
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            try {
+                const response = await fetch('/api/generate/copy/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({
+                        topic: topic,
+                        platforms: platforms
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to generate copy');
+                }
+                
+                generatedText.value = data.generated_text;
+                
+            } catch (err) {
+                aiError.textContent = err.message;
+                aiError.classList.remove('hidden');
+            } finally {
+                btnGenerate.innerHTML = originalText;
+                btnGenerate.disabled = false;
+                btnGenerate.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        });
+    });
+</script>
 {% endblock %}
